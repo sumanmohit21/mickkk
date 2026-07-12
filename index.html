@@ -144,7 +144,7 @@ footer span{color:var(--accent);}
 <footer><span>MICKKK</span> · NSE Equity Trading · Cloudflare Pages + Google Sheets</footer>
 
 <script>
-const API_URL = 'https://script.google.com/macros/s/AKfycby9c6CmgY8yq_MyfcApvPjEyRuXfSHswe4xFPIs2UGuo8gm3eo_zaiOdFuUv743S8E/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbx01mO_3odTmKfXu2SqoGrpQVftQ8f4jAb6ix6IROX_3qJ3wj4M5ke6tG8SyttSS-amOQ/exec';
 function calcPnL(t){if(!t.exit)return null;const g=t.dir==='B'?(t.exit-t.entry)*t.qty:(t.entry-t.exit)*t.qty;return g-40;}
 function outcome(t){if(!t.exit)return'OPEN';const p=calcPnL(t);return p>0?'WIN':p<0?'LOSS':'BE';}
 function fmtK(n){const a=Math.abs(n);const s=a>=1000?(a/1000).toFixed(1)+'K':a.toFixed(0);return(n>=0?'+₹':'-₹')+s;}
