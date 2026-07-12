@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK — Trading</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#080b0f;--surface:#0e1318;--card:#131a22;--border:#1e2d3d;--text:#d4e4f0;--muted:#5a7a94;--accent:#00d4ff;--green:#00e676;--red:#ff3d5a;--amber:#ffab00;--font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,11,15,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent);font-family:var(--mono);text-shadow:0 0 20px rgba(0,212,255,0.4);}
+.logo span{color:var(--muted);font-size:11px;font-weight:400;margin-left:8px;letter-spacing:1px;}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(0,212,255,0.08);}
+
+.hero{min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse 60% 50% at 70% 50%,rgba(0,212,255,0.06) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 20% 80%,rgba(0,230,118,0.04) 0%,transparent 60%),var(--bg);}
+.hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 0 60px;max-width:1200px;margin:0 auto;padding-left:24px;padding-right:24px;}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;border:1px solid rgba(0,212,255,0.2);border-radius:20px;padding:5px 14px;margin-bottom:24px;}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+h1{font-size:clamp(36px,5vw,60px);font-weight:700;line-height:1.1;letter-spacing:-1px;margin-bottom:20px;}
+h1 .name{color:var(--accent);display:block;}
+h1 .sub{color:var(--muted);font-size:0.5em;font-weight:400;display:block;margin-top:10px;letter-spacing:0;}
+.hero-desc{color:var(--muted);font-size:15px;line-height:1.7;margin-bottom:32px;max-width:440px;}
+.btns{display:flex;gap:12px;flex-wrap:wrap;}
+.btn-p{background:var(--accent);color:#000;font-weight:600;padding:11px 24px;border-radius:var(--radius);border:none;font-size:13px;cursor:pointer;font-family:var(--font);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;}
+.btn-p:hover{background:#33ddff;transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,212,255,0.25);}
+.btn-o{background:transparent;color:var(--text);font-weight:500;padding:11px 24px;border-radius:var(--radius);border:1px solid var(--border);font-size:13px;cursor:pointer;font-family:var(--font);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:all 0.2s;}
+.btn-o:hover{border-color:var(--accent);color:var(--accent);}
+
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;position:relative;overflow:hidden;}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat-card.g::before{background:linear-gradient(90deg,var(--green),transparent);}
+.stat-card.b::before{background:linear-gradient(90deg,var(--accent),transparent);}
+.stat-card.a::before{background:linear-gradient(90deg,var(--amber),transparent);}
+.stat-card.r::before{background:linear-gradient(90deg,var(--red),transparent);}
+.stat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.stat-val{font-size:30px;font-weight:700;font-family:var(--mono);line-height:1;}
+.stat-val.g{color:var(--green);} .stat-val.b{color:var(--accent);} .stat-val.a{color:var(--amber);} .stat-val.r{color:var(--red);}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:8px;}
+
+.features{padding:80px 0;background:var(--surface);}
+.features-inner{max-width:1200px;margin:0 auto;padding:0 24px;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+.sec-title{font-size:28px;font-weight:700;margin-bottom:40px;}
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;transition:border-color 0.2s;}
+.feat-card:hover{border-color:rgba(0,212,255,0.3);}
+.feat-icon{font-size:28px;margin-bottom:14px;}
+.feat-title{font-size:15px;font-weight:600;margin-bottom:8px;}
+.feat-desc{font-size:13px;color:var(--muted);line-height:1.6;}
+.feat-link{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:12px;font-weight:500;text-decoration:none;margin-top:14px;}
+.feat-link:hover{text-decoration:underline;}
+
+footer{background:var(--bg);border-top:1px solid var(--border);padding:24px 32px;text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);}
+footer span{color:var(--accent);}
+@media(max-width:900px){.hero-inner,.feat-grid{grid-template-columns:1fr;} .stats-grid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">MICKKK <span>TRADING</span></div>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="journal.html">Journal</a>
+    <a href="dashboard.html">Dashboard</a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="eyebrow">Live · NSE Equity · Zerodha</div>
+      <h1>
+        <span class="name">MICKKK</span>
+        Swing & Positional<br>Trading Journal
+        <span class="sub">VCP · Momentum · Stage 2 Setups</span>
+      </h1>
+      <p class="hero-desc">Personal trade tracker for NSE swing and positional setups. Every trade logged, every lesson captured. Data synced live with Google Sheet.</p>
+      <div class="btns">
+        <a href="journal.html" class="btn-p">📒 Open Journal</a>
+        <a href="dashboard.html" class="btn-o">📊 Dashboard</a>
+      </div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card g">
+        <div class="stat-label">Net P&L</div>
+        <div class="stat-val g" id="hs-pnl">…</div>
+        <div class="stat-sub" id="hs-pnl-sub">Loading…</div>
+      </div>
+      <div class="stat-card b">
+        <div class="stat-label">Total Trades</div>
+        <div class="stat-val b" id="hs-total">…</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat-card a">
+        <div class="stat-label">Win Rate</div>
+        <div class="stat-val a" id="hs-wr">…</div>
+        <div class="stat-sub" id="hs-wr-sub">Closed trades</div>
+      </div>
+      <div class="stat-card b">
+        <div class="stat-label">Open Trades</div>
+        <div class="stat-val b" id="hs-open">…</div>
+        <div class="stat-sub">Active positions</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="features-inner">
+    <div class="sec-label">// What's inside</div>
+    <div class="sec-title">Your Trading Command Center</div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-icon">📒</div>
+        <div class="feat-title">Trading Journal</div>
+        <div class="feat-desc">Log every trade with entry, exit, SL, target, setup notes. Add, edit, delete trades — synced live to Google Sheet. Access from any device.</div>
+        <a href="journal.html" class="feat-link">Open Journal →</a>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">📊</div>
+        <div class="feat-title">Performance Dashboard</div>
+        <div class="feat-desc">P&L curve, win rate, profit factor, best/worst trades, monthly breakdown — all auto-calculated from your trade log. No manual entry.</div>
+        <a href="dashboard.html" class="feat-link">View Dashboard →</a>
+      </div>
+      <div class="feat-card">
+        <div class="feat-icon">🔄</div>
+        <div class="feat-title">Google Sheet Sync</div>
+        <div class="feat-desc">Every trade saved directly to Google Sheet. View, filter, export your data anytime. Works on phone, tablet, laptop — always in sync.</div>
+        <a href="journal.html" class="feat-link">Add a Trade →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer><span>MICKKK</span> · NSE Equity Trading · Cloudflare Pages + Google Sheets</footer>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycby9c6CmgY8yq_MyfcApvPjEyRuXfSHswe4xFPIs2UGuo8gm3eo_zaiOdFuUv743S8E/exec';
+function calcPnL(t){if(!t.exit)return null;const g=t.dir==='B'?(t.exit-t.entry)*t.qty:(t.entry-t.exit)*t.qty;return g-40;}
+function outcome(t){if(!t.exit)return'OPEN';const p=calcPnL(t);return p>0?'WIN':p<0?'LOSS':'BE';}
+function fmtK(n){const a=Math.abs(n);const s=a>=1000?(a/1000).toFixed(1)+'K':a.toFixed(0);return(n>=0?'+₹':'-₹')+s;}
+
+(async()=>{
+  try{
+    const d=await(await fetch(`${API_URL}?action=getTrades`)).json();
+    const trades=d.trades||[];
+    const closed=trades.filter(t=>outcome(t)!=='OPEN');
+    const open=trades.filter(t=>outcome(t)==='OPEN');
+    const wins=closed.filter(t=>outcome(t)==='WIN');
+    const netPnL=closed.reduce((s,t)=>s+calcPnL(t),0);
+    const wr=closed.length?(wins.length/closed.length*100):0;
+    document.getElementById('hs-pnl').textContent=fmtK(netPnL);
+    document.getElementById('hs-pnl').className='stat-val '+(netPnL>=0?'g':'r');
+    document.getElementById('hs-pnl-sub').textContent=(netPnL>=0?'▲ Profit':'▼ Loss')+' · '+closed.length+' closed';
+    document.getElementById('hs-total').textContent=trades.length;
+    document.getElementById('hs-wr').textContent=wr.toFixed(1)+'%';
+    document.getElementById('hs-wr-sub').textContent=wins.length+' wins / '+closed.length+' closed';
+    document.getElementById('hs-open').textContent=open.length;
+  }catch(e){
+    ['hs-pnl','hs-total','hs-wr','hs-open'].forEach(id=>{document.getElementById(id).textContent='—';});
+  }
+})();
+</script>
+</body>
+</html>

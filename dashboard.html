@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+:root{--bg:#080b0f;--surface:#0e1318;--card:#131a22;--card2:#18212c;--border:#1e2d3d;--text:#d4e4f0;--muted:#5a7a94;--accent:#00d4ff;--green:#00e676;--red:#ff3d5a;--amber:#ffab00;--font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,11,15,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent);font-family:var(--mono);}
+.logo span{color:var(--muted);font-size:11px;font-weight:400;margin-left:8px;letter-spacing:1px;}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(0,212,255,0.08);}
+
+.main{padding:80px 24px 60px;max-width:1300px;margin:0 auto;}
+.page-header{margin-bottom:24px;}
+.page-title{font-size:22px;font-weight:700;}
+.page-sub{color:var(--muted);font-size:13px;margin-top:2px;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:16px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;position:relative;overflow:hidden;}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.kpi.g::before{background:linear-gradient(90deg,var(--green),transparent);}
+.kpi.b::before{background:linear-gradient(90deg,var(--accent),transparent);}
+.kpi.a::before{background:linear-gradient(90deg,var(--amber),transparent);}
+.kpi.r::before{background:linear-gradient(90deg,var(--red),transparent);}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;}
+.kpi-val{font-size:22px;font-weight:700;font-family:var(--mono);}
+.kpi-val.g{color:var(--green);} .kpi-val.b{color:var(--accent);} .kpi-val.a{color:var(--amber);} .kpi-val.r{color:var(--red);} .kpi-val.w{color:var(--text);}
+.kpi-sub{font-size:11px;color:var(--muted);margin-top:4px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;}
+@media(max-width:900px){.grid2,.grid3{grid-template-columns:1fr;}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;}
+.ptitle{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ptitle::before{content:'';width:3px;height:14px;background:var(--accent);border-radius:2px;flex-shrink:0;}
+.chart-wrap{height:220px;position:relative;}
+
+.tr-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);}
+.tr-row:last-child{border-bottom:none;}
+.tr-sym{font-weight:600;font-family:var(--mono);color:var(--accent);font-size:12px;}
+.tr-pnl{font-family:var(--mono);font-size:12px;font-weight:600;}
+
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px;color:var(--muted);font-size:13px;}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+
+.monthly-table{width:100%;border-collapse:collapse;}
+.monthly-table th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.monthly-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;}
+.monthly-table tr:last-child td{border-bottom:none;}
+.monthly-table .r{text-align:right;font-family:var(--mono);}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">MICKKK <span>TRADING</span></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Journal</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+  </div>
+</nav>
+
+<div class="main" id="main">
+  <div class="loading"><div class="spinner"></div>Google Sheet se data load ho raha hai…</div>
+</div>
+
+<script>
+const API_URL='https://script.google.com/macros/s/AKfycby9c6CmgY8yq_MyfcApvPjEyRuXfSHswe4xFPIs2UGuo8gm3eo_zaiOdFuUv743S8E/exec';
+const BROKERAGE=40;
+let charts=[];
+
+function calcPnL(t){if(!t.exit)return null;const g=t.dir==='B'?(+t.exit-+t.entry)*+t.qty:(+t.entry-+t.exit)*+t.qty;return g-BROKERAGE;}
+function outcome(t){if(!t.exit)return'OPEN';const p=calcPnL(t);return p>0?'WIN':p<0?'LOSS':'BE';}
+function fmtK(n){const a=Math.abs(n);const s=a>=1000?(a/1000).toFixed(1)+'K':a.toFixed(0);return(n>=0?'+₹':'-₹')+s;}
+
+function getMonthlyBreakdown(trades){
+  const map={};
+  trades.filter(t=>outcome(t)!=='OPEN').forEach(t=>{
+    const p=calcPnL(t);
+    const key=t.edate?t.edate.slice(0,7):'Unknown';
+    if(!map[key])map[key]={month:key,trades:0,wins:0,pnl:0};
+    map[key].trades++;
+    if(p>0)map[key].wins++;
+    map[key].pnl+=p;
+  });
+  return Object.values(map).sort((a,b)=>a.month.localeCompare(b.month));
+}
+
+function render(trades){
+  charts.forEach(c=>c.destroy()); charts=[];
+  const closed=trades.filter(t=>outcome(t)!=='OPEN');
+  const open=trades.filter(t=>outcome(t)==='OPEN');
+  const wins=closed.filter(t=>outcome(t)==='WIN');
+  const losses=closed.filter(t=>outcome(t)==='LOSS');
+  const be=closed.filter(t=>outcome(t)==='BE');
+  const netPnL=closed.reduce((s,t)=>s+calcPnL(t),0);
+  const wr=closed.length?(wins.length/closed.length*100):0;
+  const avgPnL=closed.length?netPnL/closed.length:0;
+  const avgWin=wins.length?wins.reduce((s,t)=>s+calcPnL(t),0)/wins.length:0;
+  const avgLoss=losses.length?Math.abs(losses.reduce((s,t)=>s+calcPnL(t),0)/losses.length):0;
+  const pf=avgLoss>0?(avgWin*wins.length)/(avgLoss*losses.length):0;
+  const monthly=getMonthlyBreakdown(trades);
+  const sortedClosed=[...closed].sort((a,b)=>calcPnL(b)-calcPnL(a));
+  const best=sortedClosed.slice(0,5);
+  const worst=sortedClosed.slice(-5).reverse();
+
+  const main=document.getElementById('main');
+  main.innerHTML=`
+  <div class="page-header">
+    <div class="page-title">📊 Performance Dashboard</div>
+    <div class="page-sub">Auto-calculated · Portfolio ₹3,00,000 · Brokerage ₹40/trade</div>
+  </div>
+
+  <div class="kpi-row">
+    <div class="kpi g"><div class="kpi-label">Net P&L</div><div class="kpi-val ${netPnL>=0?'g':'r'}" id="kv-pnl">${fmtK(netPnL)}</div><div class="kpi-sub">${closed.length} closed trades</div></div>
+    <div class="kpi a"><div class="kpi-label">Win Rate</div><div class="kpi-val a">${wr.toFixed(1)}%</div><div class="kpi-sub">${wins.length}W / ${losses.length}L / ${be.length}BE</div></div>
+    <div class="kpi b"><div class="kpi-label">Total Trades</div><div class="kpi-val b">${trades.length}</div><div class="kpi-sub">${open.length} open</div></div>
+    <div class="kpi g"><div class="kpi-label">Avg Win</div><div class="kpi-val g">${fmtK(avgWin)}</div><div class="kpi-sub">Per winning trade</div></div>
+    <div class="kpi r"><div class="kpi-label">Avg Loss</div><div class="kpi-val r">-₹${avgLoss.toFixed(0)}</div><div class="kpi-sub">Per losing trade</div></div>
+    <div class="kpi ${pf>=1?'g':'r'}"><div class="kpi-label">Profit Factor</div><div class="kpi-val ${pf>=1?'g':'r'}">${pf.toFixed(2)}</div><div class="kpi-sub">${pf>=1?'Positive edge':'Needs work'}</div></div>
+    <div class="kpi w"><div class="kpi-label">Avg P&L/Trade</div><div class="kpi-val ${avgPnL>=0?'g':'r'}">${fmtK(avgPnL)}</div><div class="kpi-sub">Closed trades</div></div>
+    <div class="kpi b"><div class="kpi-label">Capital</div><div class="kpi-val b">₹3L</div><div class="kpi-sub">Portfolio size</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="ptitle">Cumulative P&L Curve</div>
+      <div class="chart-wrap"><canvas id="c-pnl"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Trade Outcomes Distribution</div>
+      <div class="chart-wrap"><canvas id="c-out"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="panel">
+      <div class="ptitle">Monthly P&L Breakdown</div>
+      <div class="chart-wrap"><canvas id="c-month"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Win vs Loss Amount</div>
+      <div class="chart-wrap"><canvas id="c-wl"></canvas></div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="panel">
+      <div class="ptitle">Top 5 Best Trades</div>
+      ${best.map(t=>`<div class="tr-row"><span class="tr-sym">${t.symbol}</span><span class="tr-pnl" style="color:var(--green)">+₹${calcPnL(t).toFixed(0)}</span></div>`).join('')}
+    </div>
+    <div class="panel">
+      <div class="ptitle">Top 5 Worst Trades</div>
+      ${worst.map(t=>`<div class="tr-row"><span class="tr-sym">${t.symbol}</span><span class="tr-pnl" style="color:var(--red)">-₹${Math.abs(calcPnL(t)).toFixed(0)}</span></div>`).join('')}
+    </div>
+    <div class="panel">
+      <div class="ptitle">Open Positions (${open.length})</div>
+      ${open.length?open.map(t=>`<div class="tr-row"><span class="tr-sym">${t.symbol}</span><span style="color:var(--amber);font-size:12px;font-family:var(--mono)">₹${(+t.entry).toFixed(0)} × ${t.qty}</span></div>`).join(''):'<div style="color:var(--muted);padding:12px 0;font-size:13px">No open positions</div>'}
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="ptitle">Monthly Breakdown</div>
+    <table class="monthly-table">
+      <thead><tr><th>Month</th><th class="r">Trades</th><th class="r">Wins</th><th class="r">Win Rate</th><th class="r">Net P&L</th></tr></thead>
+      <tbody>
+        ${monthly.map(m=>`<tr>
+          <td>${m.month||'Unknown'}</td>
+          <td class="r">${m.trades}</td>
+          <td class="r" style="color:var(--green)">${m.wins}</td>
+          <td class="r" style="color:var(--amber)">${m.trades?(m.wins/m.trades*100).toFixed(0)+'%':'—'}</td>
+          <td class="r" style="color:${m.pnl>=0?'var(--green)':'var(--red)'};font-weight:600">${m.pnl>=0?'+₹':'-₹'}${Math.abs(m.pnl).toFixed(0)}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+
+  // Draw charts
+  let cum=0;
+  const cumData=closed.map(t=>{cum+=calcPnL(t);return+cum.toFixed(0);});
+  const cumColor=cum>=0?'#00e676':'#ff3d5a';
+  charts.push(new Chart(document.getElementById('c-pnl'),{type:'line',data:{labels:closed.map(t=>t.symbol),datasets:[{data:cumData,borderColor:cumColor,backgroundColor:cumColor+'15',fill:true,tension:0.4,pointRadius:0,borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{display:false},y:{ticks:{color:'#5a7a94',font:{size:10}},grid:{color:'#1e2d3d'}}}}}));
+
+  charts.push(new Chart(document.getElementById('c-out'),{type:'doughnut',data:{labels:['Wins','Losses','Open','BE'],datasets:[{data:[wins.length,losses.length,open.length,be.length],backgroundColor:['#00e676','#ff3d5a','#ffab00','#5a7a94'],borderWidth:0,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{labels:{color:'#5a7a94',font:{size:11},boxWidth:10}}}}}));
+
+  if(monthly.length){
+    charts.push(new Chart(document.getElementById('c-month'),{type:'bar',data:{labels:monthly.map(m=>m.month||'—'),datasets:[{label:'Monthly P&L',data:monthly.map(m=>+m.pnl.toFixed(0)),backgroundColor:monthly.map(m=>m.pnl>=0?'rgba(0,230,118,0.6)':'rgba(255,61,90,0.6)'),borderColor:monthly.map(m=>m.pnl>=0?'#00e676':'#ff3d5a'),borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5a7a94',font:{size:10}},grid:{color:'#1e2d3d'}},y:{ticks:{color:'#5a7a94',font:{size:10}},grid:{color:'#1e2d3d'}}}}}));
+  }
+
+  const totalWin=wins.reduce((s,t)=>s+calcPnL(t),0);
+  const totalLoss=Math.abs(losses.reduce((s,t)=>s+calcPnL(t),0));
+  charts.push(new Chart(document.getElementById('c-wl'),{type:'bar',data:{labels:['Total Wins','Total Losses'],datasets:[{data:[+totalWin.toFixed(0),+totalLoss.toFixed(0)],backgroundColor:['rgba(0,230,118,0.6)','rgba(255,61,90,0.6)'],borderColor:['#00e676','#ff3d5a'],borderWidth:1,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#5a7a94'},grid:{color:'#1e2d3d'}},y:{ticks:{color:'#5a7a94',font:{size:10}},grid:{color:'#1e2d3d'}}}}}));
+}
+
+(async()=>{
+  try{
+    const d=await(await fetch(`${API_URL}?action=getTrades`)).json();
+    render(d.trades||[]);
+  }catch(e){
+    document.getElementById('main').innerHTML='<div class="loading" style="color:var(--red)">Google Sheet se connect nahi hua. Reload karo.</div>';
+  }
+})();
+</script>
+</body>
+</html>
