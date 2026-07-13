@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK — Tools</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#080b0f;--surface:#0e1318;--card:#131a22;--card2:#18212c;--border:#1e2d3d;--text:#d4e4f0;--muted:#5a7a94;--accent:#00d4ff;--green:#00e676;--red:#ff3d5a;--amber:#ffab00;--font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,11,15,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent);font-family:var(--mono);}
+.logo span{color:var(--muted);font-size:11px;font-weight:400;margin-left:8px;letter-spacing:1px;}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(0,212,255,0.08);}
+
+.main{padding:80px 24px 60px;max-width:1200px;margin:0 auto;}
+.page-header{margin-bottom:24px;}
+.page-title{font-size:22px;font-weight:700;}
+.page-sub{color:var(--muted);font-size:13px;margin-top:2px;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:900px){.grid2{grid-template-columns:1fr;}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
+.ptitle{font-size:14px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.pdesc{color:var(--muted);font-size:12px;margin-bottom:18px;}
+
+.ff{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;}
+.ff label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.ff input{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:9px 12px;border-radius:var(--radius);font-size:13px;font-family:var(--mono);outline:none;transition:border-color 0.2s;width:100%;}
+.ff input:focus{border-color:var(--accent);}
+
+.results{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-top:16px;}
+.rrow{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed rgba(30,45,61,0.7);font-size:12.5px;}
+.rrow:last-child{border-bottom:none;}
+.rrow .k{color:var(--muted);}
+.rrow .v{font-family:var(--mono);font-weight:600;}
+.rrow .v.g{color:var(--green);} .rrow .v.a{color:var(--amber);} .rrow .v.b{color:var(--accent);}
+.hint{color:var(--muted);font-size:11px;margin-top:12px;line-height:1.6;}
+
+.rtable{width:100%;border-collapse:collapse;margin-top:16px;}
+.rtable th{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);}
+.rtable td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px;font-family:var(--mono);}
+.rtable tr:last-child td{border-bottom:none;}
+.rtable .cur td{background:rgba(0,212,255,0.06);}
+.status-hit{color:var(--green);font-weight:600;}
+.status-pend{color:var(--muted);}
+
+footer{background:var(--bg);border-top:1px solid var(--border);padding:24px 32px;text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);margin-top:40px;}
+footer span{color:var(--accent);}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">MICKKK <span>TRADING</span></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Journal</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="tools.html" class="active">Tools</a>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">🛠️ Trading Tools</div>
+    <div class="page-sub">Position sizing aur R-multiple planning — trade lene se pehle risk decide karo</div>
+  </div>
+
+  <div class="grid2">
+    <!-- POSITION SIZING CALCULATOR -->
+    <div class="panel">
+      <div class="ptitle">📐 Position Sizing Calculator</div>
+      <div class="pdesc">Capital aur risk % ke hisaab se sahi quantity nikalo — overtrading se bacho.</div>
+
+      <div class="ff"><label>Capital (₹)</label><input id="ps-cap" type="number" value="300000"></div>
+      <div class="ff"><label>Risk per Trade (%)</label><input id="ps-risk" type="number" step="0.1" value="2"></div>
+      <div class="ff"><label>Entry Price (₹)</label><input id="ps-entry" type="number" step="0.01" placeholder="e.g. 250"></div>
+      <div class="ff"><label>Stoploss Price (₹)</label><input id="ps-sl" type="number" step="0.01" placeholder="e.g. 238"></div>
+
+      <div class="results" id="ps-results">
+        <div class="rrow"><span class="k">Risk Amount (₹)</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">Risk per Share (₹)</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">Suggested Qty</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">Position Value (₹)</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">% of Capital</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">2R Target (₹)</span><span class="v">—</span></div>
+        <div class="rrow"><span class="k">3R Target (₹)</span><span class="v">—</span></div>
+      </div>
+      <div class="hint">Fill Entry &amp; Stoploss to auto-calculate. Formula: Risk Amount = Capital × Risk% · Qty = Risk Amount ÷ Risk per Share.</div>
+    </div>
+
+    <!-- R-MULTIPLE VISUALIZER -->
+    <div class="panel">
+      <div class="ptitle">🎯 R-Multiple Target Visualizer</div>
+      <div class="pdesc">Entry aur SL se R-levels dekho, current price se progress track karo.</div>
+
+      <div class="ff"><label>Entry Price (₹)</label><input id="rm-entry" type="number" step="0.01" placeholder="e.g. 250"></div>
+      <div class="ff"><label>Stoploss (₹)</label><input id="rm-sl" type="number" step="0.01" placeholder="e.g. 238"></div>
+      <div class="ff"><label>Current Price (₹) — optional</label><input id="rm-cur" type="number" step="0.01" placeholder="e.g. 262"></div>
+
+      <table class="rtable" id="rm-table">
+        <thead><tr><th>R-Level</th><th>Target Price (₹)</th><th>Gain %</th><th>Status</th></tr></thead>
+        <tbody><tr><td colspan="4" style="color:var(--muted);text-align:center">Entry aur SL bharo to R-levels dikhenge</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer><span>MICKKK</span> · Tools work fully offline — no data saved · Cloudflare Pages</footer>
+
+<script>
+function fmtR(n){return n.toLocaleString('en-IN',{maximumFractionDigits:2});}
+
+function calcPositionSizing(){
+  const cap=parseFloat(document.getElementById('ps-cap').value)||0;
+  const riskPct=parseFloat(document.getElementById('ps-risk').value)||0;
+  const entry=parseFloat(document.getElementById('ps-entry').value);
+  const sl=parseFloat(document.getElementById('ps-sl').value);
+  const rows=document.querySelectorAll('#ps-results .rrow .v');
+
+  if(!entry||!sl||entry===sl){rows.forEach(r=>r.textContent='—');return;}
+
+  const riskAmt=cap*(riskPct/100);
+  const riskPerShare=Math.abs(entry-sl);
+  const qty=Math.floor(riskAmt/riskPerShare);
+  const posValue=qty*entry;
+  const pctCap=cap?(posValue/cap*100):0;
+  const dir=entry>sl?1:-1; // long if entry above SL
+  const r2=entry+dir*riskPerShare*2;
+  const r3=entry+dir*riskPerShare*3;
+
+  rows[0].textContent='₹'+fmtR(riskAmt); rows[0].className='v a';
+  rows[1].textContent='₹'+fmtR(riskPerShare);
+  rows[2].textContent=qty.toLocaleString('en-IN'); rows[2].className='v g';
+  rows[3].textContent='₹'+fmtR(posValue);
+  rows[4].textContent=pctCap.toFixed(1)+'%'; rows[4].className=pctCap>25?'v a':'v b';
+  rows[5].textContent='₹'+fmtR(r2);
+  rows[6].textContent='₹'+fmtR(r3);
+}
+
+function calcRMultiple(){
+  const entry=parseFloat(document.getElementById('rm-entry').value);
+  const sl=parseFloat(document.getElementById('rm-sl').value);
+  const cur=parseFloat(document.getElementById('rm-cur').value);
+  const tbody=document.querySelector('#rm-table tbody');
+
+  if(!entry||!sl||entry===sl){tbody.innerHTML='<tr><td colspan="4" style="color:var(--muted);text-align:center">Entry aur SL bharo to R-levels dikhenge</td></tr>';return;}
+
+  const risk=Math.abs(entry-sl);
+  const dir=entry>sl?1:-1;
+  const levels=[-1,0,0.5,1,1.5,2,3,4,5];
+  tbody.innerHTML=levels.map(r=>{
+    const price=entry+dir*risk*r;
+    const gain=((price-entry)/entry*100);
+    let status='<span class="status-pend">Pending</span>';
+    if(cur){
+      const hit=dir===1?cur>=price:cur<=price;
+      status=hit?'<span class="status-hit">✓ Hit</span>':'<span class="status-pend">Pending</span>';
+    }
+    const isCur=r===0;
+    return `<tr class="${isCur?'cur':''}"><td>${r===0?'Entry':r+'R'}</td><td>₹${fmtR(price)}</td><td style="color:${gain>=0?'var(--green)':'var(--red)'}">${gain>=0?'+':''}${gain.toFixed(2)}%</td><td>${r===-1?'SL':status}</td></tr>`;
+  }).join('');
+}
+
+['ps-cap','ps-risk','ps-entry','ps-sl'].forEach(id=>document.getElementById(id).addEventListener('input',calcPositionSizing));
+['rm-entry','rm-sl','rm-cur'].forEach(id=>document.getElementById(id).addEventListener('input',calcRMultiple));
+calcPositionSizing();
+</script>
+</body>
+</html>
