@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — RS Ranking Matrix</title>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ============================================================
+   MICKKK.com — Brand Stylesheet
+   ============================================================ */
+:root {
+  --bg: #080b0f;
+  --surface: #0e1318;
+  --card: #131a22;
+  --card2: #18212c;
+  --border: #1e2d3d;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --accent: #00d4ff;
+  --green: #00e676;
+  --red: #ff3d5a;
+  --amber: #ffab00;
+  --purple: #a78bfa;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Navigation Bar */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8, 11, 15, 0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--accent); font-family: var(--mono); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.logo .dotcom { color: var(--text); }
+.brand-tag { font-size: 10px; color: var(--muted); font-family: var(--font); letter-spacing: 0.3px; display: none; }
+@media(min-width: 640px) { .brand-tag { display: inline-block; margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--border); } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* Layout Wrap */
+.screener-wrap { max-width: 1920px; margin: 0 auto; padding: 76px 20px 40px; }
+
+/* Page Header */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.page-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.page-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* Leaderboard Grid */
+.leader-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.leader-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.leader-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+
+.leader-item { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; font-size: 11px; border-bottom: 1px dashed rgba(30,45,61,0.5); }
+.leader-item:last-child { border-bottom: none; }
+.leader-rank { font-family: var(--mono); font-weight: 700; width: 20px; color: var(--muted); }
+.leader-sym { font-family: var(--mono); font-weight: 700; color: var(--text); flex: 1; }
+.leader-name { color: var(--muted); font-size: 10px; truncate; max-width: 120px; text-align: right; }
+
+/* Panels & Filters */
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+
+.search-box, select.filter-select {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 10px; border-radius: var(--radius); font-size: 12px; font-family: var(--font);
+  outline: none; width: 100%; transition: border-color 0.2s;
+}
+.search-box:focus, select.filter-select:focus { border-color: var(--accent); }
+
+/* Preset Buttons */
+.fbtn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 11px; border-radius: var(--radius); font-size: 11px; cursor: pointer;
+  font-family: var(--font); font-weight: 500; transition: all 0.2s; white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+.fbtn.preset-green { background: rgba(0, 230, 118, 0.12); border-color: rgba(0, 230, 118, 0.3); color: var(--green); }
+.fbtn.preset-blue { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+.fbtn.preset-amber { background: rgba(255, 171, 0, 0.12); border-color: rgba(255, 171, 0, 0.3); color: var(--amber); }
+
+.fbtn.active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: rgba(0, 212, 255, 0.22) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.35);
+  font-weight: 700 !important;
+}
+
+/* Config Weights Panel */
+.weights-panel {
+  display: none; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px; margin-bottom: 14px;
+}
+.weights-panel.open { display: block; }
+.weight-group { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+.weight-group-title { font-size: 10px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.weight-row { display: flex; items-center; justify-content: space-between; margin-bottom: 4px; font-size: 11px; }
+.weight-row input {
+  width: 45px; background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 2px 4px; border-radius: 4px; font-family: var(--mono); text-align: center; font-size: 11px;
+}
+
+/* TradingView Link Style */
+.tv-link { color: var(--accent); text-decoration: none; font-family: var(--mono); font-weight: 700; font-size: 12.5px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+.tv-link:hover { color: #ffffff; text-decoration: underline; }
+
+/* Clickable Group Links */
+.group-click-link { color: var(--text); font-weight: 700; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link:hover { color: var(--accent); text-decoration: underline; }
+.group-click-link-sub { color: var(--muted); font-size: 10.5px; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link-sub:hover { color: var(--accent); text-decoration: underline; }
+
+/* Table Styling & Merged Single Sticky Column */
+.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); width: 100%; background: var(--card); max-height: 65vh; position: relative; }
+table { width: 100%; border-collapse: collapse; min-width: 1500px; }
+thead th {
+  background: var(--card2); font-size: 9.5px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 8px; text-align: left;
+  white-space: nowrap; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30;
+  cursor: pointer; user-select: none;
+}
+thead th:hover { color: var(--accent); }
+thead th.r { text-align: right; }
+thead th.c { text-align: center; }
+
+tbody td { padding: 6px 8px; border-bottom: 1px solid var(--border); font-size: 11.5px; white-space: nowrap; font-family: var(--mono); }
+tbody td.r { text-align: right; }
+tbody td.c { text-align: center; }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+.sticky-col-merged {
+  position: sticky; left: 0; z-index: 20; background: var(--card);
+  border-right: 1px solid var(--border); width: 200px; min-width: 200px; max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+/* Rank Badges */
+.rank-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); text-align: center; min-width: 38px; }
+.rank-badge.top-tier { background: rgba(0, 230, 118, 0.18); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.4); }
+.rank-badge.mid-tier { background: rgba(255, 171, 0, 0.18); color: var(--amber); border: 1px solid rgba(255, 171, 0, 0.4); }
+.rank-badge.low-tier { background: rgba(255, 61, 90, 0.15); color: var(--red); border: 1px solid rgba(255, 61, 90, 0.3); }
+
+/* Modal Overlay */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 1200px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+.modal-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--card2); }
+.modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+
+/* Loader */
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 50px; color: var(--muted); font-size: 13px; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 20px 32px; text-align: center; color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 30px; }
+footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- MICKKK.com Top Navigation Header -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+    <span class="brand-tag">Trade Smarter. Track Everything.</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html">Market Breadth</a>
+    <a href="stock-screener.html">Stock Screener</a>
+    <a href="relative-returns.html">Relative Returns</a>
+    <a href="rs-ranking.html" class="active">RS Ranking</a>
+    <a href="sector-rs.html">Sector RS & Rotation</a>
+  </div>
+</nav>
+
+<!-- Main Area -->
+<div class="screener-wrap">
+  
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <i class="fa-solid fa-trophy text-accent"></i> RS Ranking Matrix
+      </div>
+      <div class="page-sub">Relative Strength Ranks Across 5 Multi-Timeframe Scoring Models (Calculated Live)</div>
+    </div>
+    <div style="display:flex; gap:8px">
+      <button class="fbtn preset-amber" onclick="toggleWeightsPanel()"><i class="fa-solid fa-sliders mr-1"></i> ⚙️ Customize RS Weights</button>
+      <button class="fbtn" onclick="fetchAndCalculateRS()"><i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Data</button>
+    </div>
+  </div>
+
+  <!-- Top Leaders Grid -->
+  <div class="leader-grid">
+    <div class="leader-card">
+      <div class="leader-title">🏆 Overall RS (Top 5)</div>
+      <div id="l-overall-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">⚡ Type 5: Short Term (Top 5)</div>
+      <div id="l-st-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">🔥 Type 1: Self NT (Top 5)</div>
+      <div id="l-t1-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">📊 Type 2: Self Def (Top 5)</div>
+      <div id="l-t2-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">🚀 Type 3: Rel NT (Top 5)</div>
+      <div id="l-t3-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">💎 Type 4: Rel Def (Top 5)</div>
+      <div id="l-t4-list"></div>
+    </div>
+  </div>
+
+  <!-- Expandable Live RS Weights Configuration Panel -->
+  <div id="weights-panel" class="weights-panel">
+    <div style="display:flex; items-center; justify-content:space-between; margin-bottom:12px">
+      <span style="font-size:13px; font-weight:700; color:var(--text)"><i class="fa-solid fa-sliders text-accent"></i> Custom RS Weight Configuration (% Weights)</span>
+      <button class="fbtn preset-green" onclick="recalculateWithNewWeights()"><i class="fa-solid fa-check mr-1"></i> Apply & Recalculate Ranks</button>
+    </div>
+    
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px">
+      <div class="weight-group">
+        <div class="weight-group-title">TYPE 1: Self RS (NT)</div>
+        <div class="weight-row"><span>Weekly %:</span> <input type="number" id="w-t1-w" value="40">%</div>
+        <div class="weight-row"><span>15D %:</span> <input type="number" id="w-t1-d15" value="30">%</div>
+        <div class="weight-row"><span>1M %:</span> <input type="number" id="w-t1-m1" value="20">%</div>
+        <div class="weight-row"><span>Quarterly %:</span> <input type="number" id="w-t1-q" value="10">%</div>
+      </div>
+
+      <div class="weight-group">
+        <div class="weight-group-title">TYPE 2: Self RS (Def)</div>
+        <div class="weight-row"><span>Weekly %:</span> <input type="number" id="w-t2-w" value="10">%</div>
+        <div class="weight-row"><span>1M %:</span> <input type="number" id="w-t2-m1" value="20">%</div>
+        <div class="weight-row"><span>Quarterly %:</span> <input type="number" id="w-t2-q" value="25">%</div>
+        <div class="weight-row"><span>Half Yearly %:</span> <input type="number" id="w-t2-hy" value="25">%</div>
+        <div class="weight-row"><span>Yearly %:</span> <input type="number" id="w-t2-y" value="20">%</div>
+      </div>
+
+      <div class="weight-group">
+        <div class="weight-group-title">TYPE 3: Rel RS (NT)</div>
+        <div class="weight-row"><span>Weekly Rel %:</span> <input type="number" id="w-t3-w" value="40">%</div>
+        <div class="weight-row"><span>15D Rel %:</span> <input type="number" id="w-t3-d15" value="30">%</div>
+        <div class="weight-row"><span>1M Rel %:</span> <input type="number" id="w-t3-m1" value="20">%</div>
+        <div class="weight-row"><span>Q Rel %:</span> <input type="number" id="w-t3-q" value="10">%</div>
+      </div>
+
+      <div class="weight-group">
+        <div class="weight-group-title">TYPE 4: Rel RS (Def)</div>
+        <div class="weight-row"><span>Weekly Rel %:</span> <input type="number" id="w-t4-w" value="10">%</div>
+        <div class="weight-row"><span>1M Rel %:</span> <input type="number" id="w-t4-m1" value="20">%</div>
+        <div class="weight-row"><span>Q Rel %:</span> <input type="number" id="w-t4-q" value="25">%</div>
+        <div class="weight-row"><span>HY Rel %:</span> <input type="number" id="w-t4-hy" value="25">%</div>
+        <div class="weight-row"><span>Y Rel %:</span> <input type="number" id="w-t4-y" value="20">%</div>
+      </div>
+
+      <div class="weight-group">
+        <div class="weight-group-title">TYPE 5: Short Term RS</div>
+        <div class="weight-row"><span>Weekly %:</span> <input type="number" id="w-t5-w" value="40">%</div>
+        <div class="weight-row"><span>15D %:</span> <input type="number" id="w-t5-d15" value="35">%</div>
+        <div class="weight-row"><span>1M %:</span> <input type="number" id="w-t5-m1" value="25">%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="panel">
+    
+    <!-- Row 1: Search & Dropdowns -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px">
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Company / Symbol...">
+      <select id="sector-filter" class="filter-select"><option value="">All Sectors</option></select>
+      <select id="industry-filter" class="filter-select"><option value="">All Industries</option></select>
+      <button class="fbtn" onclick="resetFilters()"><i class="fa-solid fa-rotate-left mr-1"></i> Reset Filters</button>
+    </div>
+
+    <!-- Row 2: Dedicated Presets -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding-top:10px; border-top:1px solid var(--border)">
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+        <span style="font-size:11px; color:var(--muted); font-weight:600">RS Top Filters:</span>
+        <button class="fbtn rs-btn preset-green" onclick="filterRsTop('overallRank', 50, this)">🏆 Overall Top 50</button>
+        <button class="fbtn rs-btn preset-green" onclick="filterRsTop('overallRank', 100, this)">💎 Overall Top 100</button>
+        <button class="fbtn rs-btn preset-blue" onclick="filterRsTop('rankT5', 50, this)">⚡ Short-Term Top 50</button>
+        <button class="fbtn rs-btn preset-blue" onclick="filterRsTop('rankT1', 50, this)">🔥 Self NT Top 50</button>
+        <button class="fbtn rs-btn preset-amber" onclick="filterRsTop('rankT2', 50, this)">📊 Self Def Top 50</button>
+        <button class="fbtn rs-btn preset-amber" onclick="filterRsTop('rankT3', 50, this)">🚀 Rel NT Top 50</button>
+        <button class="fbtn rs-btn preset-amber" onclick="filterRsTop('rankT4', 50, this)">🌟 Rel Def Top 50</button>
+      </div>
+
+      <div style="font-size:11px; color:var(--muted); font-family:var(--mono)">
+        Showing <span id="showing-count" style="color:var(--accent); font-weight:bold">0</span> of <span id="total-count" style="color:var(--text)">0</span> Stocks
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RS Ranking Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <!-- Merged Single Sticky Column for Stock Symbol + Name -->
+          <th class="sticky-col-merged" onclick="sortTable('symbol')" style="width:200px">STOCK / SYMBOL 📈 ⇅</th>
+          
+          <th onclick="sortTable('sector')" style="width:160px; color:var(--accent)" title="Click any sector/industry cell to view all stocks in that group">SECTOR / INDUSTRY 👆 ⇅</th>
+
+          <!-- TYPE 1 -->
+          <th class="r" onclick="sortTable('scoreT1')" title="Type 1 Score: Self RS Near-Term">Self NT Score ⇅</th>
+          <th class="c" onclick="sortTable('rankT1')" title="Type 1 Rank: Rank for Near-Term Self RS">Self NT Rank ⇅</th>
+
+          <!-- TYPE 2 -->
+          <th class="r" onclick="sortTable('scoreT2')" title="Type 2 Score: Self RS Default">Self Def Score ⇅</th>
+          <th class="c" onclick="sortTable('rankT2')" title="Type 2 Rank: Rank for Default Self RS">Self Def Rank ⇅</th>
+
+          <!-- TYPE 3 -->
+          <th class="r" onclick="sortTable('scoreT3')" title="Type 3 Score: Relative RS vs Nifty 500 Near-Term">Rel NT Score ⇅</th>
+          <th class="c" onclick="sortTable('rankT3')" title="Type 3 Rank: Relative Outperformance Rank (Near-Term)">Rel NT Rank ⇅</th>
+
+          <!-- TYPE 4 -->
+          <th class="r" onclick="sortTable('scoreT4')" title="Type 4 Score: Relative RS vs Nifty 500 Default">Rel Def Score ⇅</th>
+          <th class="c" onclick="sortTable('rankT4')" title="Type 4 Rank: Long-term Relative Rank">Rel Def Rank ⇅</th>
+
+          <!-- TYPE 5 -->
+          <th class="r" onclick="sortTable('scoreT5')" title="Type 5 Score: Short Term Momentum RS">Short Term Score ⇅</th>
+          <th class="c" onclick="sortTable('rankT5')" title="Type 5 Rank: Fast Short-Term Rank">Short Term Rank ⇅</th>
+
+          <!-- Composite Overall -->
+          <th class="c" onclick="sortTable('avgRank5')" style="color:var(--amber)" title="Average Rank = Sum of all 5 RS Ranks / 5">Avg Rank (5) ⇅</th>
+          <th class="c" onclick="sortTable('overallRank')" style="color:var(--accent)" title="Master Overall RS Rank (1 to 2000+)">Overall RS Rank 🏆 ⇅</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Dynamic Rows -->
+      </tbody>
+    </table>
+    <div id="loading-spinner" class="loading">
+      <div class="spinner"></div> Calculating RS Models from Live Stock Data...
+    </div>
+  </div>
+
+</div>
+
+<!-- Sector / Industry Drilldown Modal -->
+<div id="stocks-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span id="modal-group-title" style="font-size:14px; font-weight:700; color:var(--accent)">—</span>
+      <button onclick="closeModal()" class="fbtn" style="padding:2px 8px">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:11px; color:var(--muted); margin-bottom:10px">Click headers to sort stocks inside this group by any RS Rank or metric:</p>
+      <div class="table-wrap">
+        <table style="min-width:1100px">
+          <thead>
+            <tr>
+              <th onclick="sortModalTable('symbol')" style="width:100px">Symbol 📈 ⇅</th>
+              <th onclick="sortModalTable('name')" style="width:180px">Company Name ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT1')">Self NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT2')">Self Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT3')">Rel NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT4')">Rel Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT5')">ST Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('overallRank')" style="color:var(--accent)">Overall RS 🏆 ⇅</th>
+              <th class="r" onclick="sortModalTable('mcap')">Market Cap ⇅</th>
+              <th class="r" onclick="sortModalTable('close')">Price (₹) ⇅</th>
+              <th class="r" onclick="sortModalTable('turnover')">Turnover ⇅</th>
+              <th class="c" onclick="sortModalTable('rsi')">RSI ⇅</th>
+            </tr>
+          </thead>
+          <tbody id="modal-stocks-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MICKKK.com Footer -->
+<footer><span>MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<!-- Logic Script -->
+<script>
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeuesRdQRyxxCSrlR4IBl2fIVba4iVx4S69pIhozzLXmc_MvzWuPJBOvjTgnFgbbZJuw/exec';
+
+let rawMasterStocks = [];
+let rawRelStocks = [];
+let stocks = [];
+let filteredStocks = [];
+let currentSort = { column: 'overallRank', direction: 'asc' };
+let activeRankLimit = null;
+let activeLimitCol = 'overallRank';
+
+let activeModalStocks = [];
+let modalSort = { column: 'overallRank', direction: 'asc' };
+
+window.addEventListener('DOMContentLoaded', () => {
+  fetchAndCalculateRS();
+  setupEventListeners();
+});
+
+function toggleWeightsPanel() {
+  document.getElementById('weights-panel').classList.toggle('open');
+}
+
+async function fetchAndCalculateRS() {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'flex';
+
+  try {
+    const [resMaster, resRel] = await Promise.all([
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=stockMaster'),
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=relativeReturns')
+    ]);
+
+    const masterData = await resMaster.json();
+    const relData = await resRel.json();
+
+    if (masterData.status === 'ok' && masterData.stocks) rawMasterStocks = masterData.stocks;
+    if (relData.status === 'ok' && relData.stocks) rawRelStocks = relData.stocks;
+
+    recalculateWithNewWeights();
+  } catch (err) {
+    console.error("Failed to fetch RS data:", err);
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+function recalculateWithNewWeights() {
+  if (!rawMasterStocks.length) return;
+
+  const wT1 = {
+    w: (parseFloat(document.getElementById('w-t1-w').value) || 0) / 100,
+    d15: (parseFloat(document.getElementById('w-t1-d15').value) || 0) / 100,
+    m1: (parseFloat(document.getElementById('w-t1-m1').value) || 0) / 100,
+    q: (parseFloat(document.getElementById('w-t1-q').value) || 0) / 100
+  };
+
+  const wT2 = {
+    w: (parseFloat(document.getElementById('w-t2-w').value) || 0) / 100,
+    m1: (parseFloat(document.getElementById('w-t2-m1').value) || 0) / 100,
+    q: (parseFloat(document.getElementById('w-t2-q').value) || 0) / 100,
+    hy: (parseFloat(document.getElementById('w-t2-hy').value) || 0) / 100,
+    y: (parseFloat(document.getElementById('w-t2-y').value) || 0) / 100
+  };
+
+  const wT3 = {
+    w: (parseFloat(document.getElementById('w-t3-w').value) || 0) / 100,
+    d15: (parseFloat(document.getElementById('w-t3-d15').value) || 0) / 100,
+    m1: (parseFloat(document.getElementById('w-t3-m1').value) || 0) / 100,
+    q: (parseFloat(document.getElementById('w-t3-q').value) || 0) / 100
+  };
+
+  const wT4 = {
+    w: (parseFloat(document.getElementById('w-t4-w').value) || 0) / 100,
+    m1: (parseFloat(document.getElementById('w-t4-m1').value) || 0) / 100,
+    q: (parseFloat(document.getElementById('w-t4-q').value) || 0) / 100,
+    hy: (parseFloat(document.getElementById('w-t4-hy').value) || 0) / 100,
+    y: (parseFloat(document.getElementById('w-t4-y').value) || 0) / 100
+  };
+
+  const wT5 = {
+    w: (parseFloat(document.getElementById('w-t5-w').value) || 0) / 100,
+    d15: (parseFloat(document.getElementById('w-t5-d15').value) || 0) / 100,
+    m1: (parseFloat(document.getElementById('w-t5-m1').value) || 0) / 100
+  };
+
+  const relMap = {};
+  rawRelStocks.forEach(s => relMap[s.symbol] = s);
+
+  const rawCalculated = rawMasterStocks.map(s => {
+    const rel = relMap[s.symbol] || {};
+
+    const w = s.weeklyPct || 0, d15 = s.d15Pct || 0, m1 = s.monthlyPct || 0;
+    const q = s.quarterlyPct || 0, hy = s.halfYearlyPct || 0, y = s.yearlyPct || 0;
+
+    const wRel = rel.weeklyRel || 0, d15Rel = rel.d15Rel || 0, m1Rel = rel.monthlyRel || 0;
+    const qRel = rel.quarterlyRel || 0, hyRel = rel.halfYearlyRel || 0, yRel = rel.yearlyRel || 0;
+
+    const scoreT1 = (w * wT1.w) + (d15 * wT1.d15) + (m1 * wT1.m1) + (q * wT1.q);
+    const scoreT2 = (w * wT2.w) + (m1 * wT2.m1) + (q * wT2.q) + (hy * wT2.hy) + (y * wT2.y);
+
+    const scoreT3 = (wRel * wT3.w) + (d15Rel * wT3.d15) + (m1Rel * wT3.m1) + (qRel * wT3.q);
+    const scoreT4 = (wRel * wT4.w) + (m1Rel * wT4.m1) + (qRel * wT4.q) + (hyRel * wT4.hy) + (yRel * wT4.y);
+
+    const scoreT5 = (w * wT5.w) + (d15 * wT5.d15) + (m1 * wT5.m1);
+
+    return {
+      ...s,
+      scoreT1, scoreT2, scoreT3, scoreT4, scoreT5
+    };
+  });
+
+  assignRank(rawCalculated, 'scoreT1', 'rankT1');
+  assignRank(rawCalculated, 'scoreT2', 'rankT2');
+  assignRank(rawCalculated, 'scoreT3', 'rankT3');
+  assignRank(rawCalculated, 'scoreT4', 'rankT4');
+  assignRank(rawCalculated, 'scoreT5', 'rankT5');
+
+  rawCalculated.forEach(item => {
+    item.avgRank5 = (item.rankT1 + item.rankT2 + item.rankT3 + item.rankT4 + item.rankT5) / 5;
+  });
+
+  rawCalculated.sort((a, b) => a.avgRank5 - b.avgRank5);
+  rawCalculated.forEach((item, idx) => item.overallRank = idx + 1);
+
+  stocks = rawCalculated;
+
+  updateLeaderCards();
+  populateDropdowns();
+  applyFilters();
+}
+
+function updateLeaderCards() {
+  if (!stocks.length) return;
+
+  renderLeaderList('l-overall-list', [...stocks].sort((a, b) => a.overallRank - b.overallRank).slice(0, 5));
+  renderLeaderList('l-st-list', [...stocks].sort((a, b) => a.rankT5 - b.rankT5).slice(0, 5));
+  renderLeaderList('l-t1-list', [...stocks].sort((a, b) => a.rankT1 - b.rankT1).slice(0, 5));
+  renderLeaderList('l-t2-list', [...stocks].sort((a, b) => a.rankT2 - b.rankT2).slice(0, 5));
+  renderLeaderList('l-t3-list', [...stocks].sort((a, b) => a.rankT3 - b.rankT3).slice(0, 5));
+  renderLeaderList('l-t4-list', [...stocks].sort((a, b) => a.rankT4 - b.rankT4).slice(0, 5));
+}
+
+function renderLeaderList(containerId, top5List) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  el.innerHTML = top5List.map((s, idx) => `
+    <div class="leader-item">
+      <span class="leader-rank">#${idx + 1}</span>
+      <span class="leader-sym">${s.symbol}</span>
+      <span class="leader-name truncate" title="${s.name}">${s.name}</span>
+    </div>
+  `).join('');
+}
+
+function assignRank(list, scoreKey, rankKey) {
+  list.sort((a, b) => b[scoreKey] - a[scoreKey]);
+  list.forEach((item, idx) => item[rankKey] = idx + 1);
+}
+
+function setupEventListeners() {
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('sector-filter').addEventListener('change', applyFilters);
+  document.getElementById('industry-filter').addEventListener('change', applyFilters);
+}
+
+function populateDropdowns() {
+  const sectorSelect = document.getElementById('sector-filter');
+  const industrySelect = document.getElementById('industry-filter');
+
+  const sectors = [...new Set(stocks.map(s => s.sector).filter(Boolean))].sort();
+  const industries = [...new Set(stocks.map(s => s.industry).filter(Boolean))].sort();
+
+  sectorSelect.innerHTML = '<option value="">All Sectors</option>';
+  sectors.forEach(sec => sectorSelect.innerHTML += `<option value="${sec}">${sec}</option>`);
+
+  industrySelect.innerHTML = '<option value="">All Industries</option>';
+  industries.forEach(ind => industrySelect.innerHTML += `<option value="${ind}">${ind}</option>`);
+}
+
+function filterRsTop(colKey, limit, btnEl) {
+  if (btnEl.classList.contains('active')) {
+    activeRankLimit = null;
+    btnEl.classList.remove('active');
+  } else {
+    document.querySelectorAll('.rs-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+    activeRankLimit = limit;
+    activeLimitCol = colKey;
+    currentSort.column = colKey;
+    currentSort.direction = 'asc';
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+  const sectorVal = document.getElementById('sector-filter').value;
+  const indVal = document.getElementById('industry-filter').value;
+
+  filteredStocks = stocks.filter(s => {
+    const matchSearch = !searchVal || (s.name && s.name.toLowerCase().includes(searchVal)) || (s.symbol && s.symbol.toLowerCase().includes(searchVal));
+    const matchSector = !sectorVal || s.sector === sectorVal;
+    const matchInd = !indVal || s.industry === indVal;
+    const matchLimit = !activeRankLimit || (s[activeLimitCol] || 9999) <= activeRankLimit;
+
+    return matchSearch && matchSector && matchInd && matchLimit;
+  });
+
+  sortData();
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('sector-filter').value = '';
+  document.getElementById('industry-filter').value = '';
+  activeRankLimit = null;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  applyFilters();
+}
+
+function sortTable(col) {
+  if (currentSort.column === col) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = col;
+    currentSort.direction = col.includes('rank') || col === 'overallRank' || col === 'avgRank5' ? 'asc' : 'desc';
+  }
+  sortData();
+  renderTable();
+}
+
+function sortData() {
+  const col = currentSort.column;
+  const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+  filteredStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  document.getElementById('showing-count').textContent = filteredStocks.length;
+  document.getElementById('total-count').textContent = stocks.length;
+
+  if (filteredStocks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="15" class="c" style="color:var(--muted); padding:40px">No stocks match the selected criteria.</td></tr>`;
+    return;
+  }
+
+  filteredStocks.forEach(s => {
+    const tr = document.createElement('tr');
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+
+    tr.innerHTML = `
+      <!-- Merged Single Sticky Cell for Symbol + Name -->
+      <td class="sticky-col-merged">
+        <div style="display:flex; flex-direction:column; gap:1px">
+          <a href="${tvUrl}" target="_blank" class="tv-link" title="Open TradingView Chart">
+            ${s.symbol} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px; opacity:0.7"></i>
+          </a>
+          <span style="font-size:10.5px; font-weight:400; color:var(--muted); font-family:var(--font)" class="truncate" title="${s.name}">${s.name}</span>
+        </div>
+      </td>
+
+      <!-- Dual Clickable Sector & Industry -->
+      <td>
+        <div style="display:flex; flex-direction:column; gap:2px">
+          <span class="group-click-link" onclick="openGroupModal('sector', '${s.sector}')" title="Click to view Sector stocks">${s.sector || '-'}</span>
+          <span class="group-click-link-sub" onclick="openGroupModal('industry', '${s.industry}')" title="Click to view Industry stocks">${s.industry || '-'}</span>
+        </div>
+      </td>
+
+      <!-- TYPE 1: Self RS (NT) -->
+      <td class="r" style="color:var(--muted)">${s.scoreT1.toFixed(2)}%</td>
+      <td class="c">${s.rankT1}</td>
+
+      <!-- TYPE 2: Self RS (Def) -->
+      <td class="r" style="color:var(--muted)">${s.scoreT2.toFixed(2)}%</td>
+      <td class="c">${s.rankT2}</td>
+
+      <!-- TYPE 3: Rel RS (NT) -->
+      <td class="r" style="color:var(--muted)">${s.scoreT3.toFixed(2)}%</td>
+      <td class="c">${s.rankT3}</td>
+
+      <!-- TYPE 4: Rel RS (Def) -->
+      <td class="r" style="color:var(--muted)">${s.scoreT4.toFixed(2)}%</td>
+      <td class="c">${s.rankT4}</td>
+
+      <!-- TYPE 5: Short Term -->
+      <td class="r" style="color:var(--muted)">${s.scoreT5.toFixed(2)}%</td>
+      <td class="c">${s.rankT5}</td>
+
+      <!-- Avg Rank & Overall Rank -->
+      <td class="c" style="color:var(--amber); font-weight:600">${s.avgRank5.toFixed(1)}</td>
+      <td class="c">${getRankBadge(s.overallRank)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openGroupModal(type, groupName) {
+  if (!groupName) return;
+  const nameLower = groupName.toLowerCase().trim();
+  
+  activeModalStocks = stocks.filter(s => {
+    const val = type === 'sector' ? s.sector : s.industry;
+    return (val || '').toLowerCase().trim() === nameLower;
+  });
+
+  document.getElementById('modal-group-title').textContent = `${type.toUpperCase()}: ${groupName.toUpperCase()} (${activeModalStocks.length} STOCKS)`;
+  modalSort = { column: 'overallRank', direction: 'asc' };
+  
+  sortAndRenderModal();
+  document.getElementById('stocks-modal').classList.add('open');
+}
+
+function sortModalTable(colKey) {
+  if (modalSort.column === colKey) {
+    modalSort.direction = modalSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    modalSort.column = colKey;
+    modalSort.direction = colKey.includes('rank') || colKey.includes('Rank') || colKey === 'overallRank' ? 'asc' : 'desc';
+  }
+  sortAndRenderModal();
+}
+
+function sortAndRenderModal() {
+  const col = modalSort.column;
+  const dir = modalSort.direction === 'asc' ? 1 : -1;
+
+  activeModalStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+
+  const tbody = document.getElementById('modal-stocks-body');
+  tbody.innerHTML = activeModalStocks.map(s => {
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+    return `
+      <tr>
+        <td style="padding:6px">
+          <a href="${tvUrl}" target="_blank" class="tv-link">${s.symbol} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px"></i></a>
+        </td>
+        <td style="padding:6px; color:var(--text)" class="truncate" title="${s.name}">${s.name}</td>
+        <td class="c" style="padding:6px">${s.rankT1 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT2 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT3 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT4 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT5 || '-'}</td>
+        <td class="c" style="padding:6px">${getRankBadge(s.overallRank)}</td>
+        <td class="r" style="padding:6px">${s.mcap ? Math.round(s.mcap).toLocaleString('en-IN') : '-'}</td>
+        <td class="r" style="padding:6px">₹${(s.close || 0).toFixed(2)}</td>
+        <td class="r" style="padding:6px; color:var(--amber)">${s.turnover ? Number(s.turnover).toFixed(2) : '-'}</td>
+        <td class="c" style="padding:6px">${s.rsi ? s.rsi.toFixed(1) : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function closeModal() {
+  document.getElementById('stocks-modal').classList.remove('open');
+}
+
+function getRankBadge(rank) {
+  if (!rank) return '—';
+  let tier = 'low-tier';
+  if (rank <= 100) tier = 'top-tier';
+  else if (rank <= 300) tier = 'mid-tier';
+
+  return `<span class="rank-badge ${tier}">${rank}</span>`;
+}
+</script>
+</body>
+</html>

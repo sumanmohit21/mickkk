@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — Advanced Trading Terminal & Screener Command Center</title>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --bg: #080b0f;
+  --surface: #0e1318;
+  --card: #131a22;
+  --card2: #18212c;
+  --border: #1e2d3d;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --accent: #00d4ff;
+  --green: #00e676;
+  --red: #ff3d5a;
+  --amber: #ffab00;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 12px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Navigation Bar */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8, 11, 15, 0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--accent); font-family: var(--mono); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.logo .dotcom { color: var(--text); }
+.brand-tag { font-size: 10px; color: var(--muted); font-family: var(--font); letter-spacing: 0.3px; display: none; }
+@media(min-width: 640px) { .brand-tag { display: inline-block; margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--border); } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* Hero Section */
+.hero-section {
+  padding: 120px 20px 60px;
+  text-align: center;
+  position: relative;
+  background: radial-gradient(circle at center, rgba(0,212,255,0.07) 0%, transparent 60%);
+}
+.hero-title {
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #ffffff 0%, var(--text) 50%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+@media(max-width: 640px) { .hero-title { font-size: 32px; } }
+.hero-sub {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 680px;
+  margin: 0 auto 30px;
+  line-height: 1.6;
+}
+
+/* Interactive Dual Search Bar Widget */
+.dual-search-widget {
+  max-width: 580px;
+  margin: 0 auto 40px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 16px;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.search-inputs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.symbol-input {
+  flex: 1;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-family: var(--mono);
+  font-weight: bold;
+  text-transform: uppercase;
+  outline: none;
+  transition: all 0.2s;
+}
+.symbol-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(0,212,255,0.15);
+}
+.search-actions {
+  display: flex;
+  gap: 10px;
+}
+.search-btn {
+  flex: 1;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-mickkk {
+  background: var(--accent);
+  color: #000;
+}
+.btn-mickkk:hover {
+  background: #33ddff;
+}
+.btn-tv {
+  background: var(--card2);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+.btn-tv:hover {
+  border-color: #60a5fa;
+  color: #60a5fa;
+  background: rgba(96,165,250,0.05);
+}
+
+/* Modules Grid */
+.modules-section {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 24px;
+  text-align: center;
+}
+.modules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 16px;
+}
+.module-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+}
+.module-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0,212,255,0.06);
+}
+.module-icon {
+  font-size: 28px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.module-name {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.module-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+}
+.module-link-text {
+  margin-top: 18px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.module-card:hover .module-link-text {
+  text-decoration: underline;
+}
+
+/* Feature highlight ribbon */
+.highlights-panel {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 40px 20px;
+  margin-bottom: 60px;
+}
+.highlights-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+}
+.highlight-item {
+  text-align: center;
+}
+.highlight-item i {
+  font-size: 22px;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.highlight-title {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.highlight-desc {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 24px 32px; text-align: center; color: var(--muted); font-size: 12px; font-family: var(--mono); }
+footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Navigation Bar -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+    <span class="brand-tag">Trade Smarter. Track Everything.</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html" class="active">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html">Market Breadth</a>
+    <a href="stock-screener.html">Stock Screener</a>
+    <a href="relative-returns.html">Relative Returns</a>
+    <a href="rs-ranking.html">RS Ranking</a>
+    <a href="sector-rs.html">Sector RS</a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<div class="hero-section">
+  <h1 class="hero-title">High-Alpha Trading System</h1>
+  <p class="hero-sub">Relative Strength analysis, multi-timeframe scoring, live technical screener and interactive charts unified in one custom command center.</p>
+
+  <!-- Interactive Dual Search Widget -->
+  <div class="dual-search-widget">
+    <div class="search-inputs">
+      <input type="text" id="symbol-input" class="symbol-input" placeholder="Enter Symbol (e.g. RELIANCE)" autofocus>
+    </div>
+    <div class="search-actions">
+      <button class="search-btn btn-mickkk" onclick="openInternalChart()">
+        <i class="fa-solid fa-chart-line"></i> Open in Pro Charts
+      </button>
+      <button class="search-btn btn-tv" onclick="openTradingView()">
+        <i class="fa-solid fa-arrow-up-right-from-square"></i> TradingView Chart
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Key Highlights Bar -->
+<div class="highlights-panel">
+  <div class="highlights-container">
+    <div class="highlight-item">
+      <i class="fa-solid fa-bolt"></i>
+      <div class="highlight-title">Real-Time Refresh</div>
+      <div class="highlight-desc">Daily auto-updated metrics synced seamlessly via Google Finance core engine.</div>
+    </div>
+    <div class="highlight-item">
+      <i class="fa-solid fa-pencil"></i>
+      <div class="highlight-title">Persistent Drawings</div>
+      <div class="highlight-desc">Advanced Lightweight Charts with persistent trendlines & Fibonacci.</div>
+    </div>
+    <div class="highlight-item">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <div class="highlight-title">5 RS MTF Models</div>
+      <div class="highlight-desc">Custom weights configuration to identify market leadership instantly.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modules Section -->
+<div class="modules-section">
+  <h2 class="section-title">📊 Trading Command Center Modules</h2>
+  <div class="modules-grid">
+    
+    <!-- 1. Pro Terminal Charts -->
+    <a href="charts.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-chart-line"></i></div>
+      <div class="module-name">Pro Terminal Charts</div>
+      <div class="module-desc">Lightweight Charts packed with custom indicators (NR7, WIB, Supertrend, Pocket Pivot, EMA envelopes, Gap detector) and client-side drawings.</div>
+      <div class="module-link-text">Launch Terminal <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 2. Trading Journal -->
+    <a href="journal.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-book"></i></div>
+      <div class="module-name">Trading Journal & P&L</div>
+      <div class="module-desc">Sync trades automatically, analyze your metrics with live statistics, expectancy, equity curves, drawdown maps, and trade-by-trade analytics.</div>
+      <div class="module-link-text">Open Journal <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 3. Sector RS & Rotation -->
+    <a href="sector-rs.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-arrows-spin"></i></div>
+      <div class="module-name">Sector RS & Rotation</div>
+      <div class="module-desc">Analyze sector momentum trends, historical trajectories, sector breadth, and parent-child stock divergence patterns.</div>
+      <div class="module-link-text">View Sectors <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 4. RS Ranking Matrix -->
+    <a href="rs-ranking.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-trophy"></i></div>
+      <div class="module-name">RS Ranking Matrix</div>
+      <div class="module-desc">Multi-timeframe relative strength ranks. Customize indicator parameters and spot market leaders before they break out.</div>
+      <div class="module-link-text">Check RS Matrix <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 5. Stock Master Screener -->
+    <a href="stock-screener.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-filter"></i></div>
+      <div class="module-name">Stock Master Screener</div>
+      <div class="module-desc">Scan the entire NSE universe. Filter by market cap, sector, daily/weekly changes, 52-week distance, RSI, and average 20-day turnover.</div>
+      <div class="module-link-text">Open Screener <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 6. Relative Returns vs N500 -->
+    <a href="relative-returns.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-percent"></i></div>
+      <div class="module-name">Relative Returns (Alpha)</div>
+      <div class="module-desc">Calculate outperformance (Alpha) or underperformance compared to the Nifty 500 Index benchmark over multiple timeframes.</div>
+      <div class="module-link-text">Calculate Alpha <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+    <!-- 7. Market Breadth -->
+    <a href="market-breadth.html" class="module-card">
+      <div class="module-icon"><i class="fa-solid fa-tower-broadcast"></i></div>
+      <div class="module-name">Market Breadth Internals</div>
+      <div class="module-desc">Monitor index health with Signal-MBI, EMA participation, net advances/declines, and active net 52W High-Low indicators.</div>
+      <div class="module-link-text">Open Internals <i class="fa-solid fa-arrow-right"></i></div>
+    </a>
+
+  </div>
+</div>
+
+<!-- Footer -->
+<footer><span>MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<script>
+// Key input listeners for search
+document.getElementById('symbol-input').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    openInternalChart();
+  }
+});
+
+function openInternalChart() {
+  const sym = document.getElementById('symbol-input').value.trim().toUpperCase();
+  if (!sym) {
+    alert('Please enter a valid stock symbol!');
+    return;
+  }
+  // charts.html page par query parameter ke sath redirects karega
+  window.location.href = `charts.html?symbol=${encodeURIComponent(sym)}`;
+}
+
+function openTradingView() {
+  const sym = document.getElementById('symbol-input').value.trim().toUpperCase();
+  if (!sym) {
+    alert('Please enter a valid stock symbol!');
+    return;
+  }
+  window.open(`https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(sym)}`, '_blank');
+}
+</script>
+</body>
+</html>

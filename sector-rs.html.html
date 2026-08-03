@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — Sector RS, Rotation & Breadth Command Center</title>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<!-- Chart.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+
+<style>
+/* ============================================================
+   MICKKK.com — Brand Stylesheet
+   ============================================================ */
+:root {
+  --bg: #080b0f;
+  --surface: #0e1318;
+  --card: #131a22;
+  --card2: #18212c;
+  --border: #1e2d3d;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --accent: #00d4ff;
+  --green: #00e676;
+  --red: #ff3d5a;
+  --amber: #ffab00;
+  --purple: #a78bfa;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Navigation Bar */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8, 11, 15, 0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--accent); font-family: var(--mono); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.logo .dotcom { color: var(--text); }
+.brand-tag { font-size: 10px; color: var(--muted); font-family: var(--font); letter-spacing: 0.3px; display: none; }
+@media(min-width: 640px) { .brand-tag { display: inline-block; margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--border); } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* Layout Wrap */
+.screener-wrap { max-width: 1920px; margin: 0 auto; padding: 76px 20px 40px; }
+
+/* Page Header */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.page-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.page-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* View Mode Switcher */
+.view-switcher { display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 3px; gap: 4px; flex-wrap: wrap; }
+.switch-btn { padding: 6px 14px; font-size: 12px; font-weight: 600; border: none; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.switch-btn.active { background: var(--card2); color: var(--accent); border: 1px solid var(--border); }
+
+/* Leaderboard Grid */
+.leader-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.leader-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+.leader-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: var(--accent); letter-spacing: 0.5px; margin-bottom: 8px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+
+.leader-item { display: flex; align-items: center; justify-content: space-between; padding: 3px 0; font-size: 11px; border-bottom: 1px dashed rgba(30,45,61,0.5); }
+.leader-item:last-child { border-bottom: none; }
+.leader-rank { font-family: var(--mono); font-weight: 700; width: 20px; color: var(--muted); }
+.leader-sym { font-family: var(--font); font-weight: 700; color: var(--text); flex: 1; capitalize; }
+.leader-name { color: var(--muted); font-size: 10px; font-family: var(--mono); }
+
+/* Overall Market Breadth Cards */
+.breadth-kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.breadth-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; text-align: center; }
+.breadth-lbl { font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.breadth-val { font-size: 20px; font-weight: 700; font-family: var(--mono); }
+
+/* Panels & Filters */
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+
+.search-box, select.filter-select {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 10px; border-radius: var(--radius); font-size: 12px; font-family: var(--font);
+  outline: none; transition: border-color 0.2s;
+}
+.search-box:focus, select.filter-select:focus { border-color: var(--accent); }
+
+.fbtn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 11px; border-radius: var(--radius); font-size: 11px; cursor: pointer;
+  font-family: var(--font); font-weight: 500; transition: all 0.2s; white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+.fbtn.preset-green { background: rgba(0, 230, 118, 0.12); border-color: rgba(0, 230, 118, 0.3); color: var(--green); }
+.fbtn.preset-blue { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+.fbtn.preset-amber { background: rgba(255, 171, 0, 0.12); border-color: rgba(255, 171, 0, 0.3); color: var(--amber); }
+
+.fbtn.active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: rgba(0, 212, 255, 0.22) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.35);
+  font-weight: 700 !important;
+}
+
+/* Custom Interactive Legend Bar Above Rotation Chart */
+.custom-legend-wrap {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px;
+  margin-bottom: 12px; padding: 8px 12px; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 8px;
+}
+.legend-item {
+  display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px;
+  background: var(--card); border: 1px solid var(--border); border-radius: 5px;
+  font-size: 11px; font-weight: 700; font-family: var(--font); color: var(--text);
+  cursor: pointer; transition: all 0.2s; user-select: none;
+}
+.legend-item:hover { border-color: var(--accent); background: var(--card2); }
+.legend-item.hidden-dataset { opacity: 0.3; text-decoration: line-through; }
+.legend-color-box { width: 16px; height: 8px; border-radius: 2px; display: inline-block; }
+
+.chart-container { height: 350px; position: relative; width: 100%; }
+
+/* Table Styling */
+.table-wrap { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); width: 100%; background: var(--card); max-height: 65vh; position: relative; }
+table { width: 100%; border-collapse: collapse; min-width: 1450px; }
+thead th {
+  background: var(--card2); font-size: 9.5px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 9px 10px; text-align: left;
+  white-space: nowrap; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30;
+  cursor: pointer; user-select: none;
+}
+thead th:hover { color: var(--accent); }
+thead th.r { text-align: right; }
+thead th.c { text-align: center; }
+
+tbody td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; white-space: nowrap; font-family: var(--mono); }
+tbody td.r { text-align: right; }
+tbody td.c { text-align: center; }
+tbody tr { cursor: pointer; transition: background 0.15s; }
+tbody tr:hover td { background: rgba(0, 212, 255, 0.04); }
+
+.sticky-col-1 {
+  position: sticky; left: 0; z-index: 20; background: var(--card);
+  font-family: var(--font); font-weight: 700; color: var(--text);
+  width: 170px; max-width: 170px; overflow: hidden; text-overflow: ellipsis; text-transform: capitalize;
+  border-right: 1px solid var(--border);
+}
+
+/* Badges */
+.momentum-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 600; padding: 2px 8px; border-radius: 4px; font-family: var(--font); }
+.momentum-badge.improving { background: rgba(0, 212, 255, 0.15); color: var(--accent); border: 1px solid rgba(0, 212, 255, 0.3); }
+.momentum-badge.stable { background: rgba(90, 122, 148, 0.15); color: var(--muted); border: 1px solid rgba(90, 122, 148, 0.3); }
+.momentum-badge.weakening { background: rgba(255, 61, 90, 0.15); color: var(--red); border: 1px solid rgba(255, 61, 90, 0.3); }
+
+.rank-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; font-family: var(--mono); text-align: center; min-width: 35px; }
+.rank-badge.top-tier { background: rgba(0, 230, 118, 0.18); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.4); }
+.rank-badge.mid-tier { background: rgba(255, 171, 0, 0.18); color: var(--amber); border: 1px solid rgba(255, 171, 0, 0.4); }
+.rank-badge.low-tier { background: rgba(255, 61, 90, 0.15); color: var(--red); border: 1px solid rgba(255, 61, 90, 0.3); }
+
+.rank-pill { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); text-align: center; min-width: 32px; }
+.rank-pill.top { background: rgba(0, 230, 118, 0.2); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.4); }
+.rank-pill.mid { background: rgba(255, 171, 0, 0.2); color: var(--amber); border: 1px solid rgba(255, 171, 0, 0.4); }
+.rank-pill.low { background: rgba(255, 61, 90, 0.18); color: var(--red); border: 1px solid rgba(255, 61, 90, 0.3); }
+
+.tv-link { color: var(--accent); text-decoration: none; font-family: var(--mono); font-weight: 600; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px; }
+.tv-link:hover { color: #ffffff; text-decoration: underline; }
+
+.pnl-pos { color: var(--green); font-weight: 600; }
+.pnl-neg { color: var(--red); font-weight: 600; }
+
+/* Modal */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 1200px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+.modal-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--card2); }
+.modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 50px; color: var(--muted); font-size: 13px; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 20px 32px; text-align: center; color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 30px; }
+footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- MICKKK.com Top Navigation Header -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+    <span class="brand-tag">Trade Smarter. Track Everything.</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html">Market Breadth</a>
+    <a href="stock-screener.html">Stock Screener</a>
+    <a href="relative-returns.html">Relative Returns</a>
+    <a href="rs-ranking.html">RS Ranking</a>
+    <a href="sector-rs.html" class="active">Sector RS & Rotation</a>
+  </div>
+</nav>
+
+<!-- Main Area -->
+<div class="screener-wrap">
+  
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <i class="fa-solid fa-chart-pie text-accent"></i> Sector RS, Rotation & Breadth Matrix
+      </div>
+      <div class="page-sub">Comprehensive Sector RS Rankings, Rotation Trends, Divergence & Market Breadth</div>
+    </div>
+
+    <!-- 5 View Mode Switcher -->
+    <div style="display:flex; align-items:center; gap:10px">
+      <div class="view-switcher">
+        <button id="btn-view-sector" class="switch-btn active" onclick="switchMainView('sector')">🏢 Sectors (24)</button>
+        <button id="btn-view-industry" class="switch-btn" onclick="switchMainView('industry')">🏭 Industries (107)</button>
+        <button id="btn-view-divergence" class="switch-btn" onclick="switchMainView('divergence')">⚖️ Divergence</button>
+        <button id="btn-view-breadth" class="switch-btn" onclick="switchMainView('breadth')">📡 Market Breadth</button>
+        <button id="btn-view-rotation" class="switch-btn" onclick="switchMainView('rotation')">📈 Sector Rotation</button>
+      </div>
+      <button class="fbtn" onclick="fetchAndCalculateGroupRS()"><i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh</button>
+    </div>
+  </div>
+
+  <!-- SECTION A: Leader Cards Grid -->
+  <div id="section-leaders" class="leader-grid">
+    <div class="leader-card">
+      <div class="leader-title">🏆 Overall Group RS (Top 5)</div>
+      <div id="l-overall-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">⚡ Type 5: Short Term (Top 5)</div>
+      <div id="l-st-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">🔥 Type 1: Self NT (Top 5)</div>
+      <div id="l-t1-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">📊 Type 2: Self Def (Top 5)</div>
+      <div id="l-t2-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">🚀 Type 3: Rel NT (Top 5)</div>
+      <div id="l-t3-list"></div>
+    </div>
+    <div class="leader-card">
+      <div class="leader-title">💎 Type 4: Rel Def (Top 5)</div>
+      <div id="l-t4-list"></div>
+    </div>
+  </div>
+
+  <!-- SECTION B: Overall Market Breadth KPIs -->
+  <div id="section-breadth-kpis" style="display:none" class="breadth-kpi-grid">
+    <div class="breadth-card">
+      <div class="breadth-lbl">Total Tracked</div>
+      <div id="mb-total" class="breadth-val text-accent">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">Advancers (Daily > 0)</div>
+      <div id="mb-adv" class="breadth-val pnl-pos">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">Decliners (Daily < 0)</div>
+      <div id="mb-dec" class="breadth-val pnl-neg">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">A / D Ratio</div>
+      <div id="mb-ad-ratio" class="breadth-val" style="color:var(--amber)">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">New 52W Highs</div>
+      <div id="mb-nh" class="breadth-val pnl-pos">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">New 52W Lows</div>
+      <div id="mb-nl" class="breadth-val pnl-neg">—</div>
+    </div>
+    <div class="breadth-card">
+      <div class="breadth-lbl">Net (Highs - Lows)</div>
+      <div id="mb-net-nhnl" class="breadth-val">—</div>
+    </div>
+  </div>
+
+  <!-- SECTION C: Sector Rotation Trend Chart & Heatmap (For Rotation View) -->
+  <div id="section-rotation-panel" style="display:none" class="panel">
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--border)">
+      
+      <!-- Timeframe Filters -->
+      <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+        <span style="font-size:11px; color:var(--muted); font-weight:600">Timeframe:</span>
+        <button class="fbtn tf-btn" onclick="setRotationTimeframe('1w', this)">1W</button>
+        <button class="fbtn tf-btn" onclick="setRotationTimeframe('15d', this)">15D</button>
+        <button class="fbtn tf-btn" onclick="setRotationTimeframe('1m', this)">1M</button>
+        <button class="fbtn tf-btn" onclick="setRotationTimeframe('3m', this)">3M (Q)</button>
+        <button class="fbtn tf-btn" onclick="setRotationTimeframe('6m', this)">6M</button>
+        <button class="fbtn tf-btn active" onclick="setRotationTimeframe('all', this)">All (1Y)</button>
+      </div>
+
+      <!-- Controls Right -->
+      <div style="display:flex; align-items:center; gap:10px">
+        <select id="rotation-model-selector" class="filter-select" onchange="renderRotationView()">
+          <option value="overall">🏆 Overall Group RS Rank</option>
+          <option value="stRank">⚡ Short Term RS Rank</option>
+          <option value="selfNT">🔥 Self RS (Near-Term)</option>
+          <option value="selfDef">📊 Self RS (Default)</option>
+          <option value="relNT">🚀 Relative RS (Near-Term)</option>
+          <option value="relDef">💎 Relative RS (Default)</option>
+        </select>
+
+        <select id="rotation-count-selector" class="filter-select" onchange="renderRotationView()">
+          <option value="5">Top 5 Sectors</option>
+          <option value="8" selected>Top 8 Sectors</option>
+          <option value="10">Top 10 Sectors</option>
+          <option value="15">Top 15 Sectors</option>
+          <option value="24">All 24 Sectors</option>
+        </select>
+      </div>
+
+    </div>
+
+    <!-- Title & Custom Interactive Legend -->
+    <div style="font-size:12px; font-weight:700; color:var(--accent); text-transform:uppercase; margin-bottom:8px">
+      <i class="fa-solid fa-chart-line"></i> Sector Rank Trend Trajectory (Rank 1 = Top Leader)
+    </div>
+
+    <!-- Custom Legend Bar (Matches Screenshot) -->
+    <div id="chart-legend-container" class="custom-legend-wrap"></div>
+
+    <!-- Canvas -->
+    <div class="chart-container" style="margin-bottom:20px">
+      <canvas id="rotation-chart"></canvas>
+    </div>
+
+    <!-- Rotation Heatmap Matrix -->
+    <div style="padding:10px 14px; background:var(--card2); border:1px solid var(--border); border-bottom:none; font-size:12px; font-weight:700; color:var(--text); display:flex; align-items:center; justify-content:space-between">
+      <span>📋 Date-Wise Historical Heatmap Matrix</span>
+      <span id="heatmap-date-count" style="font-size:11px; color:var(--muted); font-family:var(--mono)">0 Snapshots</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead id="heatmap-head"></thead>
+        <tbody id="heatmap-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Filter Bar (For Sector, Industry, Divergence, Breadth Views) -->
+  <div id="section-filter-bar" class="panel">
+    <div style="display:flex; flex-direction:column; gap:10px">
+      <div style="display:flex; align-items:center; gap:10px">
+        <input type="text" id="search-input" class="search-box" style="max-width:300px" placeholder="🔍 Search Name...">
+        <button class="fbtn" onclick="resetFilters()"><i class="fa-solid fa-rotate-left mr-1"></i> Reset Filters</button>
+      </div>
+
+      <!-- Presets Row -->
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap; padding-top:8px; border-top:1px solid var(--border)">
+        
+        <!-- RS Presets -->
+        <div id="presets-rs-container" style="display:flex; align-items:center; gap:6px; flex-wrap:wrap">
+          <span style="font-size:11px; color:var(--muted); font-weight:600">Top Presets:</span>
+          <button class="fbtn group-btn preset-green" onclick="filterRankPreset('overallGroupRank', 10, this)">🏆 Overall Top 10</button>
+          <button class="fbtn group-btn preset-blue" onclick="filterRankPreset('stRank', 10, this)">⚡ Short Term Top 10</button>
+          <button class="fbtn group-btn preset-blue" onclick="filterRankPreset('selfNTRank', 10, this)">🔥 Self NT Top 10</button>
+          <button class="fbtn group-btn preset-amber" onclick="filterRankPreset('selfDefRank', 10, this)">📊 Self Def Top 10</button>
+          <button class="fbtn group-btn preset-amber" onclick="filterRankPreset('relNTRank', 10, this)">🚀 Rel NT Top 10</button>
+          <button class="fbtn group-btn preset-amber" onclick="filterRankPreset('relDefRank', 10, this)">💎 Rel Def Top 10</button>
+          <button class="fbtn group-btn preset-green" onclick="filterSpecialPreset('improving', this)">🔼 Improving</button>
+        </div>
+
+        <!-- Divergence Presets -->
+        <div id="presets-div-container" style="display:none; align-items:center; gap:6px; flex-wrap:wrap">
+          <span style="font-size:11px; color:var(--muted); font-weight:600">Divergence Presets:</span>
+          <button class="fbtn div-btn preset-green" onclick="filterDivergenceType('outperforming', this)">🚀 Outperforming Sector (>+5)</button>
+          <button class="fbtn div-btn preset-amber" onclick="filterDivergenceType('laggard', this)">🔻 Lagging Sector (<-5)</button>
+          <button class="fbtn div-btn preset-blue" onclick="filterDivergenceType('inline', this)">➖ In Line With Sector</button>
+        </div>
+
+        <!-- Breadth Presets -->
+        <div id="presets-breadth-container" style="display:none; align-items:center; gap:6px; flex-wrap:wrap">
+          <button class="fbtn preset-green" onclick="filterBreadthGroup('sector')">🏢 Sector Breadth (24)</button>
+          <button class="fbtn preset-blue" onclick="filterBreadthGroup('industry')">🏭 Industry Breadth (107)</button>
+        </div>
+
+        <div style="font-size:11px; color:var(--muted); font-family:var(--mono)">
+          Showing <span id="showing-count" style="color:var(--accent); font-weight:bold">0</span> Items
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Standard Data Table Container -->
+  <div id="section-main-table" class="table-wrap">
+    <table>
+      <thead id="table-head">
+        <!-- Loaded dynamically -->
+      </thead>
+      <tbody id="table-body">
+        <!-- Loaded dynamically -->
+      </tbody>
+    </table>
+    <div id="loading-spinner" class="loading">
+      <div class="spinner"></div> Calculating Sector RS, Rotation & Market Breadth...
+    </div>
+  </div>
+
+</div>
+
+<!-- Sector Drilldown Stock List Modal (Universal across ALL views) -->
+<div id="stocks-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span id="modal-group-title" style="font-size:14px; font-weight:700; color:var(--accent)">—</span>
+      <button onclick="closeModal()" class="fbtn" style="padding:2px 8px">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:11px; color:var(--muted); margin-bottom:10px">Click headers to sort stocks inside this group by any RS Rank or metric:</p>
+      <div class="table-wrap">
+        <table style="min-width:1100px">
+          <thead>
+            <tr>
+              <th onclick="sortModalTable('symbol')" style="width:100px">Symbol 📈 ⇅</th>
+              <th onclick="sortModalTable('name')" style="width:180px">Company Name ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT1')">Self NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT2')">Self Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT3')">Rel NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT4')">Rel Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT5')">ST Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('overallRank')" style="color:var(--accent)">Overall RS 🏆 ⇅</th>
+              <th class="r" onclick="sortModalTable('close')">Price (₹) ⇅</th>
+              <th class="r" onclick="sortModalTable('turnover')">Turnover (Cr) ⇅</th>
+              <th class="c" onclick="sortModalTable('rsi')">RSI ⇅</th>
+            </tr>
+          </thead>
+          <tbody id="modal-stocks-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MICKKK.com Footer -->
+<footer><span>MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<!-- Logic Script -->
+<script>
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeuesRdQRyxxCSrlR4IBl2fIVba4iVx4S69pIhozzLXmc_MvzWuPJBOvjTgnFgbbZJuw/exec';
+
+let rawMasterStocks = [];
+let rawRelStocks = [];
+
+let sectorGroups = [];
+let industryGroups = [];
+let divergenceList = [];
+
+let overallBreadthData = {};
+let sectorBreadthList = [];
+let industryBreadthList = [];
+
+let historyDates = [];
+let historySectors = {};
+let chartInstance = null;
+let activeRotationTimeframe = 'all';
+
+let activeMainView = 'sector'; // 'sector', 'industry', 'divergence', 'breadth', 'rotation'
+let activeBreadthSubGroup = 'sector';
+
+let currentGroups = [];
+let filteredGroups = [];
+let currentSort = { column: 'overallGroupRank', direction: 'asc' };
+
+let activePresetCol = null;
+let activePresetLimit = null;
+let activeSpecialPreset = null;
+let activeDivPreset = null;
+
+let activeModalStocks = [];
+let modalSort = { column: 'overallRank', direction: 'asc' };
+
+const SECTOR_COLORS = [
+  '#00d4ff', '#00e676', '#ffab00', '#a78bfa', '#ff3d5a', '#3b82f6', '#ec4899', '#f97316',
+  '#14b8a6', '#8b5cf6', '#6366f1', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#84cc16'
+];
+
+window.addEventListener('DOMContentLoaded', () => {
+  fetchAndCalculateGroupRS();
+  setupEventListeners();
+});
+
+function switchMainView(mode) {
+  activeMainView = mode;
+  document.getElementById('btn-view-sector').className = mode === 'sector' ? 'switch-btn active' : 'switch-btn';
+  document.getElementById('btn-view-industry').className = mode === 'industry' ? 'switch-btn active' : 'switch-btn';
+  document.getElementById('btn-view-divergence').className = mode === 'divergence' ? 'switch-btn active' : 'switch-btn';
+  document.getElementById('btn-view-breadth').className = mode === 'breadth' ? 'switch-btn active' : 'switch-btn';
+  document.getElementById('btn-view-rotation').className = mode === 'rotation' ? 'switch-btn active' : 'switch-btn';
+
+  const leaderSection = document.getElementById('section-leaders');
+  const breadthSection = document.getElementById('section-breadth-kpis');
+  const rotationSection = document.getElementById('section-rotation-panel');
+  const filterBarSection = document.getElementById('section-filter-bar');
+  const mainTableSection = document.getElementById('section-main-table');
+
+  const presetsRS = document.getElementById('presets-rs-container');
+  const presetsDiv = document.getElementById('presets-div-container');
+  const presetsBreadth = document.getElementById('presets-breadth-container');
+
+  if (mode === 'rotation') {
+    leaderSection.style.display = 'none';
+    breadthSection.style.display = 'none';
+    rotationSection.style.display = 'block';
+    filterBarSection.style.display = 'none';
+    mainTableSection.style.display = 'none';
+    fetchSectorHistoryIfNeeded();
+  } else if (mode === 'breadth') {
+    leaderSection.style.display = 'none';
+    breadthSection.style.display = 'grid';
+    rotationSection.style.display = 'none';
+    filterBarSection.style.display = 'block';
+    mainTableSection.style.display = 'block';
+
+    presetsRS.style.display = 'none';
+    presetsDiv.style.display = 'none';
+    presetsBreadth.style.display = 'flex';
+    currentGroups = activeBreadthSubGroup === 'sector' ? sectorBreadthList : industryBreadthList;
+    currentSort = { column: 'net', direction: 'desc' };
+  } else if (mode === 'divergence') {
+    leaderSection.style.display = 'none';
+    breadthSection.style.display = 'none';
+    rotationSection.style.display = 'none';
+    filterBarSection.style.display = 'block';
+    mainTableSection.style.display = 'block';
+
+    presetsRS.style.display = 'none';
+    presetsDiv.style.display = 'flex';
+    presetsBreadth.style.display = 'none';
+    currentGroups = divergenceList;
+    currentSort = { column: 'divergence', direction: 'desc' };
+  } else {
+    leaderSection.style.display = 'grid';
+    breadthSection.style.display = 'none';
+    rotationSection.style.display = 'none';
+    filterBarSection.style.display = 'block';
+    mainTableSection.style.display = 'block';
+
+    presetsRS.style.display = 'flex';
+    presetsDiv.style.display = 'none';
+    presetsBreadth.style.display = 'none';
+    currentGroups = mode === 'sector' ? sectorGroups : industryGroups;
+    currentSort = { column: 'overallGroupRank', direction: 'asc' };
+    updateLeaderCards();
+  }
+
+  if (mode !== 'rotation') applyFilters();
+}
+
+function filterBreadthGroup(subMode) {
+  activeBreadthSubGroup = subMode;
+  currentGroups = subMode === 'sector' ? sectorBreadthList : industryBreadthList;
+  applyFilters();
+}
+
+function filterDivergenceType(type, btnEl) {
+  if (btnEl.classList.contains('active')) {
+    activeDivPreset = null;
+    btnEl.classList.remove('active');
+  } else {
+    document.querySelectorAll('.div-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+    activeDivPreset = type;
+  }
+  applyFilters();
+}
+
+async function fetchAndCalculateGroupRS() {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'flex';
+
+  try {
+    const [resMaster, resRel] = await Promise.all([
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=stockMaster'),
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=relativeReturns')
+    ]);
+
+    const masterData = await resMaster.json();
+    const relData = await resRel.json();
+
+    if (masterData.status === 'ok' && masterData.stocks) rawMasterStocks = masterData.stocks;
+    if (relData.status === 'ok' && relData.stocks) rawRelStocks = relData.stocks;
+
+    calculateAllMetrics();
+  } catch (err) {
+    console.error("Failed to fetch group RS data:", err);
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+function calculateAllMetrics() {
+  if (!rawMasterStocks.length) return;
+
+  const relMap = {};
+  rawRelStocks.forEach(s => relMap[s.symbol] = s);
+
+  // 1. Process Individual Stock Ranks Universe-wide
+  let adv = 0, dec = 0, unch = 0, nh = 0, nl = 0;
+
+  const processedStocks = rawMasterStocks.map(s => {
+    const rel = relMap[s.symbol] || {};
+    const w = s.weeklyPct || 0, d15 = s.d15Pct || 0, m1 = s.monthlyPct || 0;
+    const q = s.quarterlyPct || 0, hy = s.halfYearlyPct || 0, y = s.yearlyPct || 0;
+
+    const wRel = rel.weeklyRel || 0, d15Rel = rel.d15Rel || 0, m1Rel = rel.monthlyRel || 0;
+    const qRel = rel.quarterlyRel || 0, hyRel = rel.halfYearlyRel || 0, yRel = rel.yearlyRel || 0;
+
+    const scoreT1 = (w * 0.40) + (d15 * 0.30) + (m1 * 0.20) + (q * 0.10);
+    const scoreT2 = (w * 0.10) + (m1 * 0.20) + (q * 0.25) + (hy * 0.25) + (y * 0.20);
+    const scoreT3 = (wRel * 0.40) + (d15Rel * 0.30) + (m1Rel * 0.20) + (qRel * 0.10);
+    const scoreT4 = (wRel * 0.10) + (m1Rel * 0.20) + (qRel * 0.25) + (hyRel * 0.25) + (yRel * 0.20);
+    const scoreT5 = (w * 0.40) + (d15 * 0.35) + (m1 * 0.25);
+
+    if (s.dailyPct > 0) adv++;
+    else if (s.dailyPct < 0) dec++;
+    else unch++;
+
+    const isNewHigh = (s.away52wHigh !== null && s.away52wHigh >= 0);
+    const isNewLow = (s.away52wLow !== null && s.away52wLow <= 0);
+    if (isNewHigh) nh++;
+    if (isNewLow) nl++;
+
+    const isNear52WH = (s.away52wHigh !== null && s.away52wHigh >= -10.0);
+
+    return {
+      name: s.name, symbol: s.symbol, sector: (s.sector || 'Unassigned').toLowerCase(),
+      industry: (s.industry || 'Unassigned').toLowerCase(), close: s.close,
+      turnover: s.turnover, rsi: s.rsi,
+      scoreT1, scoreT2, scoreT3, scoreT4, scoreT5, isNear52WH, isNewHigh, isNewLow
+    };
+  });
+
+  assignRank(processedStocks, 'scoreT1', 'rankT1');
+  assignRank(processedStocks, 'scoreT2', 'rankT2');
+  assignRank(processedStocks, 'scoreT3', 'rankT3');
+  assignRank(processedStocks, 'scoreT4', 'rankT4');
+  assignRank(processedStocks, 'scoreT5', 'rankT5');
+
+  processedStocks.forEach(s => {
+    s.avgRank5 = (s.rankT1 + s.rankT2 + s.rankT3 + s.rankT4 + s.rankT5) / 5;
+  });
+
+  processedStocks.sort((a, b) => a.avgRank5 - b.avgRank5);
+  processedStocks.forEach((s, idx) => s.overallRank = idx + 1);
+
+  // 2. Build Overall Market Breadth
+  overallBreadthData = {
+    total: processedStocks.length, adv, dec, unch,
+    adRatio: dec > 0 ? (adv / dec).toFixed(2) : adv.toString(),
+    nh, nl, netNHNL: nh - nl
+  };
+  renderOverallBreadthCards();
+
+  // 3. Build RS Groups
+  sectorGroups = buildGroupAggregates(processedStocks, 'sector');
+  industryGroups = buildGroupAggregates(processedStocks, 'industry');
+
+  // 4. Build Divergence Analysis
+  divergenceList = buildDivergenceAnalysis();
+
+  // 5. Build Breadth Groups
+  sectorBreadthList = buildGroupBreadth(processedStocks, 'sector');
+  industryBreadthList = buildGroupBreadth(processedStocks, 'industry');
+
+  switchMainView(activeMainView);
+}
+
+function buildDivergenceAnalysis() {
+  const sectorRankMap = {};
+  sectorGroups.forEach(sec => {
+    sectorRankMap[sec.name.toLowerCase()] = sec.overallGroupRank;
+  });
+
+  const indParentMap = {};
+  rawMasterStocks.forEach(s => {
+    const ind = (s.industry || '').toLowerCase().trim();
+    const sec = (s.sector || '').toLowerCase().trim();
+    if (ind && sec && !indParentMap[ind]) {
+      indParentMap[ind] = sec;
+    }
+  });
+
+  return industryGroups.map(ind => {
+    const parentSecName = indParentMap[ind.name.toLowerCase()] || 'unassigned';
+    const secRank = sectorRankMap[parentSecName] || 999;
+    const indRank = ind.overallGroupRank;
+    const divergence = secRank - indRank;
+
+    let readText = 'In line with sector';
+    let readBadge = 'stable';
+    if (divergence > 5) {
+      readText = 'Outperforming sector 🚀';
+      readBadge = 'improving';
+    } else if (divergence < -5) {
+      readText = 'Lagging its sector 🔻';
+      readBadge = 'weakening';
+    }
+
+    return {
+      name: ind.name, parentSector: parentSecName,
+      indRank: indRank, secRank: secRank, divergence: divergence,
+      readText: readText, readBadge: readBadge, stocks: ind.stocks, count: ind.count
+    };
+  }).sort((a, b) => b.divergence - a.divergence);
+}
+
+function renderOverallBreadthCards() {
+  const d = overallBreadthData;
+  if (!d.total) return;
+
+  document.getElementById('mb-total').textContent = d.total.toLocaleString();
+  document.getElementById('mb-adv').textContent = d.adv.toLocaleString();
+  document.getElementById('mb-dec').textContent = d.dec.toLocaleString();
+  document.getElementById('mb-ad-ratio').textContent = d.adRatio;
+  document.getElementById('mb-nh').textContent = d.nh;
+  document.getElementById('mb-nl').textContent = d.nl;
+  
+  const netEl = document.getElementById('mb-net-nhnl');
+  netEl.textContent = (d.netNHNL >= 0 ? '+' : '') + d.netNHNL;
+  netEl.className = `breadth-val ${d.netNHNL >= 0 ? 'pnl-pos' : 'pnl-neg'}`;
+}
+
+function buildGroupAggregates(stockList, groupKey) {
+  const map = {};
+
+  stockList.forEach(s => {
+    const gName = s[groupKey] || 'Other';
+    if (!map[gName]) {
+      map[gName] = { name: gName, count: 0, stocks: [], sumT1: 0, sumT2: 0, sumT3: 0, sumT4: 0, sumT5: 0, near52WHCount: 0 };
+    }
+    map[gName].count++;
+    map[gName].stocks.push(s);
+    map[gName].sumT1 += s.scoreT1;
+    map[gName].sumT2 += s.scoreT2;
+    map[gName].sumT3 += s.scoreT3;
+    map[gName].sumT4 += s.scoreT4;
+    map[gName].sumT5 += s.scoreT5;
+    if (s.isNear52WH) map[gName].near52WHCount++;
+  });
+
+  const groups = Object.values(map).map(g => {
+    return {
+      name: g.name, count: g.count, stocks: g.stocks,
+      selfNTScore: g.sumT1 / g.count, selfDefScore: g.sumT2 / g.count,
+      relNTScore: g.sumT3 / g.count, relDefScore: g.sumT4 / g.count,
+      stScore: g.sumT5 / g.count, pctNear52WH: (g.near52WHCount / g.count) * 100
+    };
+  });
+
+  assignGroupRank(groups, 'selfNTScore', 'selfNTRank');
+  assignGroupRank(groups, 'selfDefScore', 'selfDefRank');
+  assignGroupRank(groups, 'relNTScore', 'relNTRank');
+  assignGroupRank(groups, 'relDefScore', 'relDefRank');
+  assignGroupRank(groups, 'stScore', 'stRank');
+  assignGroupRank(groups, 'pctNear52WH', 'breadthRank');
+
+  groups.forEach(g => {
+    g.avgRank = (g.selfNTRank + g.selfDefRank + g.relNTRank + g.relDefRank + g.stRank + g.breadthRank) / 6;
+    const diff = g.selfDefRank - g.selfNTRank; 
+    if (diff >= 2) { g.momentumTrend = 'Improving'; g.momentumBadge = 'improving'; g.momentumIcon = '▲'; }
+    else if (diff <= -2) { g.momentumTrend = 'Weakening'; g.momentumBadge = 'weakening'; g.momentumIcon = '▼'; }
+    else { g.momentumTrend = 'Stable'; g.momentumBadge = 'stable'; g.momentumIcon = '➖'; }
+  });
+
+  groups.sort((a, b) => a.avgRank - b.avgRank);
+  groups.forEach((g, idx) => g.overallGroupRank = idx + 1);
+
+  return groups;
+}
+
+function buildGroupBreadth(stockList, groupKey) {
+  const map = {};
+
+  stockList.forEach(s => {
+    const gName = s[groupKey] || 'Other';
+    if (!map[gName]) {
+      map[gName] = { name: gName, count: 0, nh: 0, nl: 0, stocks: [] };
+    }
+    map[gName].count++;
+    map[gName].stocks.push(s);
+    if (s.isNewHigh) map[gName].nh++;
+    if (s.isNewLow) map[gName].nl++;
+  });
+
+  return Object.values(map).map(g => ({
+    name: g.name, count: g.count, nh: g.nh, nl: g.nl, net: g.nh - g.nl,
+    pctNH: (g.nh / g.count) * 100, pctNL: (g.nl / g.count) * 100, stocks: g.stocks
+  })).sort((a, b) => b.net - a.net || b.nh - a.nh);
+}
+
+function assignGroupRank(list, scoreKey, rankKey) {
+  list.sort((a, b) => b[scoreKey] - a[scoreKey]);
+  list.forEach((item, idx) => item[rankKey] = idx + 1);
+}
+
+function assignRank(list, scoreKey, rankKey) {
+  list.sort((a, b) => b[scoreKey] - a[scoreKey]);
+  list.forEach((item, idx) => item[rankKey] = idx + 1);
+}
+
+function updateLeaderCards() {
+  if (!currentGroups.length) return;
+
+  renderGroupLeaderList('l-overall-list', [...currentGroups].sort((a, b) => a.overallGroupRank - b.overallGroupRank).slice(0, 5));
+  renderGroupLeaderList('l-st-list', [...currentGroups].sort((a, b) => a.stRank - b.stRank).slice(0, 5));
+  renderGroupLeaderList('l-t1-list', [...currentGroups].sort((a, b) => a.selfNTRank - b.selfNTRank).slice(0, 5));
+  renderGroupLeaderList('l-t2-list', [...currentGroups].sort((a, b) => a.selfDefRank - b.selfDefRank).slice(0, 5));
+  renderGroupLeaderList('l-t3-list', [...currentGroups].sort((a, b) => a.relNTRank - b.relNTRank).slice(0, 5));
+  renderGroupLeaderList('l-t4-list', [...currentGroups].sort((a, b) => a.relDefRank - b.relDefRank).slice(0, 5));
+}
+
+function renderGroupLeaderList(containerId, top5List) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+
+  el.innerHTML = top5List.map((g, idx) => `
+    <div class="leader-item">
+      <span class="leader-rank">#${idx + 1}</span>
+      <span class="leader-sym capitalize">${g.name}</span>
+      <span class="leader-name">${g.count} stocks</span>
+    </div>
+  `).join('');
+}
+
+function setupEventListeners() {
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+}
+
+function filterRankPreset(rankColKey, limit, btnEl) {
+  if (btnEl.classList.contains('active')) {
+    activePresetCol = null;
+    activePresetLimit = null;
+    btnEl.classList.remove('active');
+  } else {
+    document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+    activePresetCol = rankColKey;
+    activePresetLimit = limit;
+    activeSpecialPreset = null;
+    currentSort.column = rankColKey;
+    currentSort.direction = 'asc';
+  }
+  applyFilters();
+}
+
+function filterSpecialPreset(type, btnEl) {
+  if (btnEl.classList.contains('active')) {
+    activeSpecialPreset = null;
+    btnEl.classList.remove('active');
+  } else {
+    document.querySelectorAll('.group-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+    activeSpecialPreset = type;
+    activePresetCol = null;
+    activePresetLimit = null;
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+
+  filteredGroups = currentGroups.filter(g => {
+    const matchSearch = !searchVal || g.name.toLowerCase().includes(searchVal) || (g.parentSector && g.parentSector.toLowerCase().includes(searchVal));
+    
+    let matchPreset = true;
+
+    if (activeMainView === 'divergence') {
+      if (activeDivPreset === 'outperforming') matchPreset = g.divergence > 5;
+      else if (activeDivPreset === 'laggard') matchPreset = g.divergence < -5;
+      else if (activeDivPreset === 'inline') matchPreset = g.divergence >= -5 && g.divergence <= 5;
+    } else if (activeMainView !== 'breadth') {
+      if (activePresetCol && activePresetLimit) {
+        matchPreset = (g[activePresetCol] || 999) <= activePresetLimit;
+      } else if (activeSpecialPreset === 'improving') {
+        matchPreset = g.momentumTrend === 'Improving';
+      }
+    }
+
+    return matchSearch && matchPreset;
+  });
+
+  sortData();
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  activePresetCol = null;
+  activePresetLimit = null;
+  activeSpecialPreset = null;
+  activeDivPreset = null;
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  applyFilters();
+}
+
+function sortTable(col) {
+  if (currentSort.column === col) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = col;
+    currentSort.direction = col.includes('Rank') || col === 'overallGroupRank' || col === 'indRank' || col === 'secRank' || col === 'count' ? 'asc' : 'desc';
+  }
+  sortData();
+  renderTable();
+}
+
+function sortData() {
+  const col = currentSort.column;
+  const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+  filteredGroups.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+}
+
+function renderTable() {
+  const thead = document.getElementById('table-head');
+  const tbody = document.getElementById('table-body');
+
+  document.getElementById('showing-count').textContent = filteredGroups.length;
+
+  if (activeMainView === 'divergence') {
+    thead.innerHTML = `
+      <tr>
+        <th class="sticky-col-1" onclick="sortTable('name')">INDUSTRY NAME ⇅</th>
+        <th onclick="sortTable('parentSector')">PARENT SECTOR ⇅</th>
+        <th class="c" onclick="sortTable('indRank')">INDUSTRY RS RANK 🏆 ⇅</th>
+        <th class="c" onclick="sortTable('secRank')">SECTOR RS RANK 🏢 ⇅</th>
+        <th class="c" onclick="sortTable('divergence')" style="color:var(--accent)">DIVERGENCE (SECTOR - INDUSTRY) 📊 ⇅</th>
+        <th class="c" onclick="sortTable('readText')">ANALYSIS READ 💡 ⇅</th>
+      </tr>
+    `;
+
+    if (filteredGroups.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="c" style="color:var(--muted); padding:40px">No divergence data found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filteredGroups.map(g => `
+      <tr onclick="openGroupStocksModalByName('${g.name}')">
+        <td class="sticky-col-1" title="Click to view stocks in ${g.name}">${g.name}</td>
+        <td style="color:var(--muted); text-transform:capitalize">${g.parentSector}</td>
+        <td class="c">${getGroupRankBadge(g.indRank)}</td>
+        <td class="c">${getGroupRankBadge(g.secRank)}</td>
+        <td class="c ${g.divergence > 0 ? 'pnl-pos' : g.divergence < 0 ? 'pnl-neg' : 'text-muted'}">${g.divergence > 0 ? '+' + g.divergence : g.divergence}</td>
+        <td class="c">
+          <span class="momentum-badge ${g.readBadge}">${g.readText}</span>
+        </td>
+      </tr>
+    `).join('');
+
+  } else if (activeMainView === 'breadth') {
+    thead.innerHTML = `
+      <tr>
+        <th class="sticky-col-1" onclick="sortTable('name')">SECTOR / INDUSTRY ⇅</th>
+        <th class="c" onclick="sortTable('count')">STOCKS ⇅</th>
+        <th class="c" onclick="sortTable('nh')">NEW 52W HIGHS 🟢 ⇅</th>
+        <th class="c" onclick="sortTable('nl')">NEW 52W LOWS 🔴 ⇅</th>
+        <th class="c" onclick="sortTable('net')">NET (HIGH - LOW) ⇅</th>
+        <th class="r" onclick="sortTable('pctNH')">% AT NEW HIGH ⇅</th>
+        <th class="r" onclick="sortTable('pctNL')">% AT NEW LOW ⇅</th>
+      </tr>
+    `;
+
+    if (filteredGroups.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" class="c" style="color:var(--muted); padding:40px">No breadth data found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filteredGroups.map(g => `
+      <tr onclick="openGroupStocksModalByName('${g.name}')">
+        <td class="sticky-col-1" title="Click to view stocks">${g.name}</td>
+        <td class="c text-muted">${g.count}</td>
+        <td class="c ${g.nh > 0 ? 'pnl-pos' : 'text-muted'}">${g.nh}</td>
+        <td class="c ${g.nl > 0 ? 'pnl-neg' : 'text-muted'}">${g.nl}</td>
+        <td class="c ${g.net > 0 ? 'pnl-pos' : g.net < 0 ? 'pnl-neg' : 'text-muted'}">${g.net > 0 ? '+' + g.net : g.net}</td>
+        <td class="r ${g.pctNH > 0 ? 'pnl-pos' : ''}">${g.pctNH.toFixed(1)}%</td>
+        <td class="r ${g.pctNL > 0 ? 'pnl-neg' : ''}">${g.pctNL.toFixed(1)}%</td>
+      </tr>
+    `).join('');
+
+  } else {
+    thead.innerHTML = `
+      <tr>
+        <th class="sticky-col-1" onclick="sortTable('name')">GROUP NAME ⇅</th>
+        <th class="c" onclick="sortTable('count')">STOCKS ⇅</th>
+        <th class="r" onclick="sortTable('selfNTScore')">Self NT Avg % ⇅</th>
+        <th class="c" onclick="sortTable('selfNTRank')">Self NT Rank ⇅</th>
+        <th class="r" onclick="sortTable('selfDefScore')">Self Def Avg % ⇅</th>
+        <th class="c" onclick="sortTable('selfDefRank')">Self Def Rank ⇅</th>
+        <th class="r" onclick="sortTable('relNTScore')">Rel NT Avg % ⇅</th>
+        <th class="c" onclick="sortTable('relNTRank')">Rel NT Rank ⇅</th>
+        <th class="r" onclick="sortTable('relDefScore')">Rel Def Avg % ⇅</th>
+        <th class="c" onclick="sortTable('relDefRank')">Rel Def Rank ⇅</th>
+        <th class="r" onclick="sortTable('stScore')">Short Term Avg % ⇅</th>
+        <th class="c" onclick="sortTable('stRank')">Short Term Rank ⇅</th>
+        <th class="r" onclick="sortTable('pctNear52WH')">% Near 52WH ⇅</th>
+        <th class="c" onclick="sortTable('breadthRank')">Breadth Rank ⇅</th>
+        <th class="c" onclick="sortTable('momentumTrend')">Momentum Trend ⇅</th>
+        <th class="c" onclick="sortTable('overallGroupRank')" style="color:var(--accent)">Overall Group RS 🏆 ⇅</th>
+      </tr>
+    `;
+
+    if (filteredGroups.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="16" class="c" style="color:var(--muted); padding:40px">No groups found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filteredGroups.map(g => `
+      <tr onclick="openGroupStocksModalByName('${g.name}')">
+        <td class="sticky-col-1" title="Click to view stocks in ${g.name}">${g.name}</td>
+        <td class="c text-muted">${g.count}</td>
+        <td class="r text-muted">${g.selfNTScore.toFixed(2)}%</td>
+        <td class="c">${g.selfNTRank}</td>
+        <td class="r text-muted">${g.selfDefScore.toFixed(2)}%</td>
+        <td class="c">${g.selfDefRank}</td>
+        <td class="r text-muted">${g.relNTScore.toFixed(2)}%</td>
+        <td class="c">${g.relNTRank}</td>
+        <td class="r text-muted">${g.relDefScore.toFixed(2)}%</td>
+        <td class="c">${g.relDefRank}</td>
+        <td class="r text-muted">${g.stScore.toFixed(2)}%</td>
+        <td class="c">${g.stRank}</td>
+        <td class="r ${g.pctNear52WH > 20 ? 'pnl-pos' : ''}">${g.pctNear52WH.toFixed(1)}%</td>
+        <td class="c">${g.breadthRank}</td>
+        <td class="c">
+          <span class="momentum-badge ${g.momentumBadge}">${g.momentumIcon} ${g.momentumTrend}</span>
+        </td>
+        <td class="c">${getGroupRankBadge(g.overallGroupRank)}</td>
+      </tr>
+    `).join('');
+  }
+}
+
+/* ============================================================
+   SECTOR ROTATION (HISTORY) LOGIC
+   ============================================================ */
+async function fetchSectorHistoryIfNeeded() {
+  if (historyDates.length) {
+    renderRotationView();
+    return;
+  }
+
+  try {
+    const res = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=sectorHistory');
+    const data = await res.json();
+
+    if (data.status === 'ok' && data.dates && data.sectors) {
+      historyDates = data.dates;
+      historySectors = data.sectors;
+      renderRotationView();
+    }
+  } catch (err) {
+    console.error("Failed to fetch history:", err);
+  }
+}
+
+function setRotationTimeframe(tf, btnEl) {
+  activeRotationTimeframe = tf;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  if (btnEl) btnEl.classList.add('active');
+  renderRotationView();
+}
+
+function getFilteredDatesAndIndices() {
+  if (!historyDates || !historyDates.length) return { dates: [], indices: [] };
+  const total = historyDates.length;
+  let keepCount = total;
+
+  if (activeRotationTimeframe === '1w') keepCount = 7;
+  else if (activeRotationTimeframe === '15d') keepCount = 15;
+  else if (activeRotationTimeframe === '1m') keepCount = 30;
+  else if (activeRotationTimeframe === '3m') keepCount = 90;
+  else if (activeRotationTimeframe === '6m') keepCount = 180;
+
+  const startIdx = Math.max(0, total - keepCount);
+  const slicedDates = historyDates.slice(startIdx);
+  const slicedIndices = [];
+  for (let i = startIdx; i < total; i++) slicedIndices.push(i);
+
+  return { dates: slicedDates, indices: slicedIndices };
+}
+
+function renderRotationView() {
+  const modelSelect = document.getElementById('rotation-model-selector');
+  const selectedModel = modelSelect ? modelSelect.value : 'overall';
+
+  renderRotationChart(selectedModel);
+  renderRotationHeatmap(selectedModel);
+}
+
+function safeGetRank(secName, rsModelKey, dateIdx) {
+  if (!historySectors[secName]) return 99;
+  const modelData = historySectors[secName][rsModelKey];
+  if (!modelData || !Array.isArray(modelData) || dateIdx >= modelData.length) return 99;
+  const val = modelData[dateIdx];
+  return (val !== null && val !== undefined && !isNaN(val)) ? Number(val) : 99;
+}
+
+function toggleDataset(el, datasetIndex) {
+  if (!chartInstance) return;
+  const isVisible = chartInstance.isDatasetVisible(datasetIndex);
+  if (isVisible) {
+    chartInstance.hide(datasetIndex);
+    el.classList.add('hidden-dataset');
+  } else {
+    chartInstance.show(datasetIndex);
+    el.classList.remove('hidden-dataset');
+  }
+}
+
+function renderRotationChart(rsModelKey) {
+  const canvas = document.getElementById('rotation-chart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  if (chartInstance) chartInstance.destroy();
+
+  const sectorNames = Object.keys(historySectors);
+  if (!sectorNames.length || !historyDates.length) return;
+
+  const { dates: chartLabels, indices } = getFilteredDatesAndIndices();
+  const countSelect = document.getElementById('rotation-count-selector');
+  const maxSectorsToShow = countSelect ? (parseInt(countSelect.value) || 8) : 8;
+
+  const latestIdx = historyDates.length - 1;
+  const sortedSectorNames = [...sectorNames].sort((a, b) => {
+    return safeGetRank(a, rsModelKey, latestIdx) - safeGetRank(b, rsModelKey, latestIdx);
+  });
+
+  const selectedSectors = sortedSectorNames.slice(0, maxSectorsToShow);
+
+  const legendContainer = document.getElementById('chart-legend-container');
+  if (legendContainer) {
+    legendContainer.innerHTML = selectedSectors.map((secName, idx) => {
+      const color = SECTOR_COLORS[idx % SECTOR_COLORS.length];
+      return `
+        <div class="legend-item" onclick="toggleDataset(this, ${idx})" title="Click to hide/show ${secName}">
+          <span class="legend-color-box" style="background:${color}; border:1px solid ${color}"></span>
+          <span>${secName.toUpperCase()}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  const datasets = selectedSectors.map((secName, idx) => {
+    const slicedRanks = indices.map(i => {
+      const r = safeGetRank(secName, rsModelKey, i);
+      return r === 99 ? null : r;
+    });
+
+    return {
+      label: secName.toUpperCase(),
+      data: slicedRanks,
+      borderColor: SECTOR_COLORS[idx % SECTOR_COLORS.length],
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      tension: 0.3,
+      pointRadius: chartLabels.length < 30 ? 4 : 2
+    };
+  });
+
+  chartInstance = new Chart(ctx, {
+    type: 'line',
+    data: { labels: chartLabels, datasets: datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { mode: 'index', intersect: false } },
+      scales: {
+        x: { ticks: { color: '#5a7a94', font: { family: 'JetBrains Mono', size: 10 } }, grid: { color: '#1e2d3d' } },
+        y: { reverse: true, min: 1, max: 24, ticks: { color: '#5a7a94', font: { family: 'JetBrains Mono', size: 10 }, stepSize: 2 }, grid: { color: '#1e2d3d' } }
+      }
+    }
+  });
+}
+
+function renderRotationHeatmap(rsModelKey) {
+  const thead = document.getElementById('heatmap-head');
+  const tbody = document.getElementById('heatmap-body');
+  if (!thead || !tbody) return;
+
+  const sectorNames = Object.keys(historySectors);
+  if (!sectorNames.length || !historyDates.length) return;
+
+  const { dates: filteredDates, indices } = getFilteredDatesAndIndices();
+  document.getElementById('heatmap-date-count').textContent = `${filteredDates.length} Snapshots Shown`;
+
+  thead.innerHTML = `
+    <tr>
+      <th class="sticky-col">DATE</th>
+      ${sectorNames.map(s => `<th style="text-transform:uppercase">${s}</th>`).join('')}
+    </tr>
+  `;
+
+  const revDates = [...filteredDates].reverse();
+  const revIndices = [...indices].reverse();
+
+  tbody.innerHTML = revDates.map((dateStr, rIdx) => {
+    const origIdx = revIndices[rIdx];
+    const cells = sectorNames.map(secName => {
+      const rankVal = safeGetRank(secName, rsModelKey, origIdx);
+      if (rankVal === 99) return `<td>—</td>`;
+
+      let pillClass = 'low';
+      if (rankVal <= 5) pillClass = 'top';
+      else if (rankVal <= 12) pillClass = 'mid';
+
+      return `<td><span class="rank-pill ${pillClass}">${rankVal}</span></td>`;
+    }).join('');
+
+    return `<tr><td class="sticky-col">${dateStr}</td>${cells}</tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   DRILLDOWN STOCK MODAL (Universal Lookup)
+   ============================================================ */
+function openGroupStocksModalByName(groupName) {
+  if (!groupName) return;
+  const nameLower = groupName.toLowerCase().trim();
+  
+  let foundGroup = currentGroups.find(g => g.name.toLowerCase().trim() === nameLower);
+  if (!foundGroup) {
+    foundGroup = [...sectorGroups, ...industryGroups, ...divergenceList, ...sectorBreadthList, ...industryBreadthList].find(g => g.name && g.name.toLowerCase().trim() === nameLower);
+  }
+
+  if (foundGroup && foundGroup.stocks && foundGroup.stocks.length) {
+    openGroupStocksModal(foundGroup);
+  }
+}
+
+function openGroupStocksModal(group) {
+  document.getElementById('modal-group-title').textContent = `${group.name.toUpperCase()} (${group.count || group.stocks.length} STOCKS)`;
+  activeModalStocks = [...group.stocks];
+  modalSort = { column: 'overallRank', direction: 'asc' };
+  
+  sortAndRenderModal();
+  document.getElementById('stocks-modal').classList.add('open');
+}
+
+function sortModalTable(colKey) {
+  if (modalSort.column === colKey) {
+    modalSort.direction = modalSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    modalSort.column = colKey;
+    modalSort.direction = colKey.includes('rank') || colKey.includes('Rank') || colKey === 'overallRank' ? 'asc' : 'desc';
+  }
+  sortAndRenderModal();
+}
+
+function sortAndRenderModal() {
+  const col = modalSort.column;
+  const dir = modalSort.direction === 'asc' ? 1 : -1;
+
+  activeModalStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+
+  const tbody = document.getElementById('modal-stocks-body');
+  tbody.innerHTML = activeModalStocks.map(s => {
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+    return `
+      <tr>
+        <td style="padding:6px">
+          <a href="${tvUrl}" target="_blank" class="tv-link">${s.symbol} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px"></i></a>
+        </td>
+        <td style="padding:6px; color:var(--text)" class="truncate" title="${s.name}">${s.name}</td>
+        <td class="c" style="padding:6px">${s.rankT1 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT2 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT3 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT4 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT5 || '-'}</td>
+        <td class="c" style="padding:6px">${getStockRankBadge(s.overallRank)}</td>
+        <td class="r" style="padding:6px">₹${(s.close || 0).toFixed(2)}</td>
+        <td class="r" style="padding:6px; color:var(--amber)">${s.turnover ?? '-'}</td>
+        <td class="c" style="padding:6px">${s.rsi ? s.rsi.toFixed(1) : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function closeModal() {
+  document.getElementById('stocks-modal').classList.remove('open');
+}
+
+function getGroupRankBadge(rank) {
+  if (!rank) return '—';
+  let tier = 'low-tier';
+  if (rank <= 5) tier = 'top-tier';
+  else if (rank <= 12) tier = 'mid-tier';
+
+  return `<span class="rank-badge ${tier}">${rank}</span>`;
+}
+
+function getStockRankBadge(rank) {
+  if (!rank) return '—';
+  let tier = 'low-tier';
+  if (rank <= 100) tier = 'top-tier';
+  else if (rank <= 300) tier = 'mid-tier';
+
+  return `<span class="rank-badge ${tier}">${rank}</span>`;
+}
+</script>
+</body>
+</html>

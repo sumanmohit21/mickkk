@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — Relative Returns vs Nifty 500</title>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ============================================================
+   MICKKK.com — Brand Stylesheet
+   ============================================================ */
+:root {
+  --bg: #080b0f;
+  --surface: #0e1318;
+  --card: #131a22;
+  --card2: #18212c;
+  --border: #1e2d3d;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --accent: #00d4ff;
+  --green: #00e676;
+  --red: #ff3d5a;
+  --amber: #ffab00;
+  --purple: #a78bfa;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Navigation Bar */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8, 11, 15, 0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--accent); font-family: var(--mono); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.logo .dotcom { color: var(--text); }
+.brand-tag { font-size: 10px; color: var(--muted); font-family: var(--font); letter-spacing: 0.3px; display: none; }
+@media(min-width: 640px) { .brand-tag { display: inline-block; margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--border); } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* Layout Wrap */
+.screener-wrap { max-width: 1920px; margin: 0 auto; padding: 76px 20px 40px; }
+
+/* Page Header */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+.page-title { font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.page-sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+/* Panels & Cards */
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px; margin-bottom: 16px; }
+.panel-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+/* Nifty 500 KPI Grid */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; text-align: center; }
+.kpi-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.kpi-val { font-size: 17px; font-weight: 700; font-family: var(--mono); }
+
+/* Filter Inputs */
+.search-box, select.filter-select {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 8px 12px; border-radius: var(--radius); font-size: 13px; font-family: var(--font);
+  outline: none; width: 100%; transition: border-color 0.2s;
+}
+.search-box:focus, select.filter-select:focus { border-color: var(--accent); }
+
+/* Preset Buttons */
+.fbtn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 13px; border-radius: var(--radius); font-size: 12px; cursor: pointer;
+  font-family: var(--font); font-weight: 500; transition: all 0.2s; white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+.fbtn.preset-green { background: rgba(0, 230, 118, 0.15); border-color: rgba(0, 230, 118, 0.4); color: var(--green); }
+.fbtn.preset-blue { background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); color: #60a5fa; }
+.fbtn.preset-amber { background: rgba(255, 171, 0, 0.15); border-color: rgba(255, 171, 0, 0.4); color: var(--amber); }
+
+.fbtn.active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: rgba(0, 212, 255, 0.22) !important;
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.35);
+  font-weight: 700 !important;
+}
+
+/* TradingView Link Style */
+.tv-link {
+  color: var(--accent); text-decoration: none; font-family: var(--mono);
+  font-weight: 700; font-size: 12.5px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;
+}
+.tv-link:hover { color: #ffffff; text-decoration: underline; }
+
+/* Clickable Group Links */
+.group-click-link { color: var(--text); font-weight: 700; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link:hover { color: var(--accent); text-decoration: underline; }
+.group-click-link-sub { color: var(--muted); font-size: 10.5px; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link-sub:hover { color: var(--accent); text-decoration: underline; }
+
+/* Table Wrap & Single Compact Sticky Column */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); width: 100%; background: var(--card); max-height: 65vh; position: relative; }
+table { width: 100%; border-collapse: collapse; min-width: 1400px; }
+thead th {
+  background: var(--card2); font-size: 10px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.6px; padding: 10px 12px; text-align: left;
+  white-space: nowrap; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30;
+  cursor: pointer; user-select: none;
+}
+thead th:hover { color: var(--accent); }
+thead th.r { text-align: right; }
+
+tbody td { padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 12px; white-space: nowrap; font-family: var(--mono); }
+tbody td.r { text-align: right; }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+.sticky-col-merged {
+  position: sticky; left: 0; z-index: 20; background: var(--card);
+  border-right: 1px solid var(--border); width: 200px; min-width: 200px; max-width: 200px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+.pnl-pos { color: var(--green); font-weight: 600; }
+.pnl-neg { color: var(--red); }
+
+/* Modal Overlay */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 1000px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+.modal-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--card2); }
+.modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+
+/* Loader */
+.loading { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 60px; color: var(--muted); font-size: 13px; }
+.spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 24px 32px; text-align: center; color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 40px; }
+footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- MICKKK.com Top Navigation Header -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+    <span class="brand-tag">Trade Smarter. Track Everything.</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html">Market Breadth</a>
+    <a href="stock-screener.html">Stock Screener</a>
+    <a href="relative-returns.html" class="active">Relative Returns</a>
+    <a href="rs-ranking.html">RS Ranking</a>
+    <a href="sector-rs.html">Sector RS & Rotation</a>
+  </div>
+</nav>
+
+<!-- Main Area -->
+<div class="screener-wrap">
+  
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <i class="fa-solid fa-scale-balanced text-accent"></i> Relative Returns vs Nifty 500
+      </div>
+      <div class="page-sub">Stock Alpha — Performance relative to Nifty 500 Benchmark (+% Outperforming / -% Underperforming)</div>
+    </div>
+    <div>
+      <button class="fbtn" onclick="fetchRelativeReturnsData()"><i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Data</button>
+    </div>
+  </div>
+
+  <!-- TOP SECTION: NIFTY 500 Index Benchmark Cards -->
+  <div class="panel">
+    <div class="panel-title">
+      <i class="fa-solid fa-chart-line"></i> NIFTY 500 Benchmark Index Returns
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-lbl">Daily %</div><div id="n500-1d" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Weekly %</div><div id="n500-1w" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">15 Days %</div><div id="n500-15d" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">1 Month %</div><div id="n500-1m" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Quarterly %</div><div id="n500-q" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Half Yearly %</div><div id="n500-hy" class="kpi-val">—</div></div>
+      <div class="kpi-card"><div class="kpi-lbl">Yearly %</div><div id="n500-y" class="kpi-val">—</div></div>
+    </div>
+  </div>
+
+  <!-- BOTTOM SECTION: Relative Returns Filters -->
+  <div class="panel">
+    
+    <!-- Row 1: Search & Dropdowns -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:14px">
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Company / Symbol...">
+      <select id="sector-filter" class="filter-select"><option value="">All Sectors</option></select>
+      <select id="industry-filter" class="filter-select"><option value="">All Industries</option></select>
+      <button class="fbtn" onclick="resetFilters()"><i class="fa-solid fa-rotate-left mr-1"></i> Reset Filters</button>
+    </div>
+
+    <!-- Row 2: Multi-Select Beat N500 Presets -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:12px; padding-top:12px; border-top:1px solid var(--border)">
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap">
+        <span style="font-size:12px; color:var(--muted); font-weight:600">Beat Nifty 500 (Multi-Select):</span>
+        <button class="fbtn n500-btn preset-green" onclick="filterBeatN500('dailyRel', this)">⚡ Daily (>0%)</button>
+        <button class="fbtn n500-btn preset-green" onclick="filterBeatN500('weeklyRel', this)">📊 Weekly (>0%)</button>
+        <button class="fbtn n500-btn preset-blue" onclick="filterBeatN500('d15Rel', this)">🚀 15-Day (>0%)</button>
+        <button class="fbtn n500-btn preset-blue" onclick="filterBeatN500('monthlyRel', this)">💎 1-Month (>0%)</button>
+        <button class="fbtn n500-btn preset-amber" onclick="filterBeatN500('quarterlyRel', this)">🔥 Quarterly (>0%)</button>
+        <button class="fbtn n500-btn preset-amber" onclick="filterBeatN500('yearlyRel', this)">🌟 Yearly (>0%)</button>
+      </div>
+
+      <div style="font-size:12px; color:var(--muted); font-family:var(--mono)">
+        Showing <span id="showing-count" style="color:var(--accent); font-weight:bold">0</span> of <span id="total-count" style="color:var(--text)">0</span> Stocks
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Relative Returns Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <!-- Single Merged Sticky Column -->
+          <th class="sticky-col-merged" onclick="sortTable('symbol')" style="width:200px">STOCK / SYMBOL 📈 ⇅</th>
+          <th onclick="sortTable('sector')" style="width:160px; color:var(--accent)">SECTOR / INDUSTRY 👆 ⇅</th>
+
+          <!-- Relative Return Columns -->
+          <th class="r" onclick="sortTable('dailyRel')" style="width:85px">1D REL % ⇅</th>
+          <th class="r" onclick="sortTable('weeklyRel')" style="width:85px">1W REL % ⇅</th>
+          <th class="r" onclick="sortTable('d15Rel')" style="width:85px">15D REL % ⇅</th>
+          <th class="r" onclick="sortTable('monthlyRel')" style="width:85px">1M REL % ⇅</th>
+          <th class="r" onclick="sortTable('quarterlyRel')" style="width:85px">Q REL % ⇅</th>
+          <th class="r" onclick="sortTable('halfYearlyRel')" style="width:85px">HY REL % ⇅</th>
+          <th class="r" onclick="sortTable('yearlyRel')" style="width:85px">1Y REL % ⇅</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <!-- Loaded dynamically -->
+      </tbody>
+    </table>
+    <div id="loading-spinner" class="loading">
+      <div class="spinner"></div> Loading Relative Returns Data...
+    </div>
+  </div>
+
+</div>
+
+<!-- Sector / Industry Drilldown Modal Popup -->
+<div id="stocks-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span id="modal-group-title" style="font-size:14px; font-weight:700; color:var(--accent)">—</span>
+      <button onclick="closeModal()" class="fbtn" style="padding:2px 8px">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:11px; color:var(--muted); margin-bottom:10px">Stocks in this group ordered by 1-Month Relative Return:</p>
+      <div class="table-wrap">
+        <table style="min-width:100%">
+          <thead>
+            <tr>
+              <th style="padding:6px">Symbol 📈</th>
+              <th style="padding:6px">Company Name</th>
+              <th class="r" style="padding:6px">1D Rel %</th>
+              <th class="r" style="padding:6px">1W Rel %</th>
+              <th class="r" style="padding:6px">1M Rel %</th>
+              <th class="r" style="padding:6px">1Y Rel %</th>
+            </tr>
+          </thead>
+          <tbody id="modal-stocks-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MICKKK.com Footer -->
+<footer><span>MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<!-- Logic Script -->
+<script>
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeuesRdQRyxxCSrlR4IBl2fIVba4iVx4S69pIhozzLXmc_MvzWuPJBOvjTgnFgbbZJuw/exec';
+
+let stocks = [];
+let filteredStocks = [];
+let currentSort = { column: 'monthlyRel', direction: 'desc' };
+let activeBeatCols = new Set();
+
+let activeModalStocks = [];
+
+window.addEventListener('DOMContentLoaded', () => {
+  fetchRelativeReturnsData();
+  setupEventListeners();
+});
+
+async function fetchRelativeReturnsData() {
+  const spinner = document.getElementById('loading-spinner');
+  spinner.style.display = 'flex';
+
+  try {
+    const res = await fetch(GOOGLE_APPS_SCRIPT_URL + '?action=relativeReturns');
+    const data = await res.json();
+
+    if (data.status === 'ok') {
+      if (data.nifty500) {
+        updateNiftyCard('n500-1d', data.nifty500.dailyPct);
+        updateNiftyCard('n500-1w', data.nifty500.weeklyPct);
+        updateNiftyCard('n500-15d', data.nifty500.d15Pct);
+        updateNiftyCard('n500-1m', data.nifty500.monthlyPct);
+        updateNiftyCard('n500-q', data.nifty500.quarterlyPct);
+        updateNiftyCard('n500-hy', data.nifty500.halfYearlyPct);
+        updateNiftyCard('n500-y', data.nifty500.yearlyPct);
+      }
+
+      if (data.stocks) {
+        stocks = data.stocks;
+      }
+    }
+
+    populateDropdowns();
+    applyFilters();
+  } catch (err) {
+    console.error("Fetch error:", err);
+  } finally {
+    spinner.style.display = 'none';
+  }
+}
+
+function updateNiftyCard(id, val) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = fmtPct(val);
+  el.className = `kpi-val ${val >= 0 ? 'pnl-pos' : 'pnl-neg'}`;
+}
+
+function setupEventListeners() {
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('sector-filter').addEventListener('change', applyFilters);
+  document.getElementById('industry-filter').addEventListener('change', applyFilters);
+}
+
+function populateDropdowns() {
+  const sectorSelect = document.getElementById('sector-filter');
+  const industrySelect = document.getElementById('industry-filter');
+
+  const sectors = [...new Set(stocks.map(s => s.sector).filter(Boolean))].sort();
+  const industries = [...new Set(stocks.map(s => s.industry).filter(Boolean))].sort();
+
+  sectorSelect.innerHTML = '<option value="">All Sectors</option>';
+  sectors.forEach(sec => sectorSelect.innerHTML += `<option value="${sec}">${sec}</option>`);
+
+  industrySelect.innerHTML = '<option value="">All Industries</option>';
+  industries.forEach(ind => industrySelect.innerHTML += `<option value="${ind}">${ind}</option>`);
+}
+
+function filterBeatN500(columnKey, btnEl) {
+  if (activeBeatCols.has(columnKey)) {
+    activeBeatCols.delete(columnKey);
+    btnEl.classList.remove('active');
+  } else {
+    activeBeatCols.add(columnKey);
+    btnEl.classList.add('active');
+    currentSort.column = columnKey;
+    currentSort.direction = 'desc';
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+  const sectorVal = document.getElementById('sector-filter').value;
+  const indVal = document.getElementById('industry-filter').value;
+
+  filteredStocks = stocks.filter(s => {
+    const matchSearch = !searchVal || (s.name && s.name.toLowerCase().includes(searchVal)) || (s.symbol && s.symbol.toLowerCase().includes(searchVal));
+    const matchSector = !sectorVal || s.sector === sectorVal;
+    const matchInd = !indVal || s.industry === indVal;
+
+    let matchAllBeats = true;
+    for (let colKey of activeBeatCols) {
+      if ((s[colKey] || 0) <= 0) {
+        matchAllBeats = false;
+        break;
+      }
+    }
+
+    return matchSearch && matchSector && matchInd && matchAllBeats;
+  });
+
+  sortData();
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('sector-filter').value = '';
+  document.getElementById('industry-filter').value = '';
+  activeBeatCols.clear();
+  document.querySelectorAll('.n500-btn').forEach(b => b.classList.remove('active'));
+  applyFilters();
+}
+
+function sortTable(col) {
+  if (currentSort.column === col) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = col;
+    currentSort.direction = ['name', 'symbol', 'sector', 'industry'].includes(col) ? 'asc' : 'desc';
+  }
+  sortData();
+  renderTable();
+}
+
+function sortData() {
+  const col = currentSort.column;
+  const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+  filteredStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  document.getElementById('showing-count').textContent = filteredStocks.length;
+  document.getElementById('total-count').textContent = stocks.length;
+
+  if (filteredStocks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="10" style="text-align:center; color:var(--muted); padding:40px">No matching stocks found.</td></tr>`;
+    return;
+  }
+
+  filteredStocks.forEach(s => {
+    const tr = document.createElement('tr');
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+
+    tr.innerHTML = `
+      <!-- Merged Single Sticky Cell for Symbol + Name -->
+      <td class="sticky-col-merged">
+        <div style="display:flex; flex-direction:column; gap:1px">
+          <a href="${tvUrl}" target="_blank" class="tv-link" title="Open TradingView Chart">
+            ${s.symbol} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px; opacity:0.7"></i>
+          </a>
+          <span style="font-size:10.5px; font-weight:400; color:var(--muted); font-family:var(--font)" class="truncate" title="${s.name}">${s.name}</span>
+        </div>
+      </td>
+
+      <!-- Dual Clickable Sector & Industry -->
+      <td>
+        <div style="display:flex; flex-direction:column; gap:2px">
+          <span class="group-click-link" onclick="openGroupModal('sector', '${s.sector}')" title="Click to view Sector stocks">${s.sector || '-'}</span>
+          <span class="group-click-link-sub" onclick="openGroupModal('industry', '${s.industry}')" title="Click to view Industry stocks">${s.industry || '-'}</span>
+        </div>
+      </td>
+
+      <!-- Relative % Changes -->
+      <td class="r ${s.dailyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.dailyRel)}</td>
+      <td class="r ${s.weeklyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.weeklyRel)}</td>
+      <td class="r ${s.d15Rel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.d15Rel)}</td>
+      <td class="r ${s.monthlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.monthlyRel)}</td>
+      <td class="r ${s.quarterlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.quarterlyRel)}</td>
+      <td class="r ${s.halfYearlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.halfYearlyRel)}</td>
+      <td class="r ${s.yearlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.yearlyRel)}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openGroupModal(type, groupName) {
+  if (!groupName) return;
+  const nameLower = groupName.toLowerCase().trim();
+  
+  activeModalStocks = stocks.filter(s => {
+    const val = type === 'sector' ? s.sector : s.industry;
+    return (val || '').toLowerCase().trim() === nameLower;
+  });
+
+  document.getElementById('modal-group-title').textContent = `${type.toUpperCase()}: ${groupName.toUpperCase()} (${activeModalStocks.length} STOCKS)`;
+  
+  activeModalStocks.sort((a,b) => (b.monthlyRel || 0) - (a.monthlyRel || 0));
+
+  const tbody = document.getElementById('modal-stocks-body');
+  tbody.innerHTML = activeModalStocks.map(s => {
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+    return `
+      <tr>
+        <td style="padding:6px">
+          <a href="${tvUrl}" target="_blank" class="tv-link">${s.symbol} <i class="fa-solid fa-arrow-up-right-from-square" style="font-size:9px"></i></a>
+        </td>
+        <td style="padding:6px; color:var(--text)" class="truncate" title="${s.name}">${s.name}</td>
+        <td class="r ${s.dailyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.dailyRel)}</td>
+        <td class="r ${s.weeklyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.weeklyRel)}</td>
+        <td class="r ${s.monthlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.monthlyRel)}</td>
+        <td class="r ${s.yearlyRel >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.yearlyRel)}</td>
+      </tr>
+    `;
+  }).join('');
+
+  document.getElementById('stocks-modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('stocks-modal').classList.remove('open');
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return (v >= 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+}
+</script>
+</body>
+</html>
