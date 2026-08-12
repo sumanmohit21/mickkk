@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — Stock Master Screener</title>
+<!-- Google Fonts -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<!-- FontAwesome Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* ============================================================
+   MICKKK.com — Brand Stylesheet
+   ============================================================ */
+:root {
+  --bg: #080b0f;
+  --surface: #0e1318;
+  --card: #131a22;
+  --card2: #18212c;
+  --border: #1e2d3d;
+  --text: #d4e4f0;
+  --muted: #5a7a94;
+  --accent: #00d4ff;
+  --green: #00e676;
+  --red: #ff3d5a;
+  --amber: #ffab00;
+  --purple: #a78bfa;
+  --font: 'Space Grotesk', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+  --radius: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; overflow-x: hidden; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Navigation Bar */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: rgba(8, 11, 15, 0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 56px;
+}
+.logo { font-size: 20px; font-weight: 700; letter-spacing: 3px; color: var(--accent); font-family: var(--mono); text-shadow: 0 0 20px rgba(0,212,255,0.4); }
+.logo .dotcom { color: var(--text); }
+.brand-tag { font-size: 10px; color: var(--muted); font-family: var(--font); letter-spacing: 0.3px; display: none; }
+@media(min-width: 640px) { .brand-tag { display: inline-block; margin-left: 14px; padding-left: 14px; border-left: 1px solid var(--border); } }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 13px; font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all 0.2s; }
+.nav-links a:hover, .nav-links a.active { color: var(--accent); background: rgba(0,212,255,0.08); }
+
+/* Layout Wrap */
+.screener-wrap { max-width: 1920px; margin: 0 auto; padding: 76px 20px 40px; }
+
+/* Page Header */
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+.page-title { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.page-sub { color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* Panels & Filters */
+.panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; }
+
+.search-box, select.filter-select {
+  background: var(--surface); border: 1px solid var(--border); color: var(--text);
+  padding: 7px 10px; border-radius: var(--radius); font-size: 12px; font-family: var(--font);
+  outline: none; width: 100%; transition: border-color 0.2s;
+}
+.search-box:focus, select.filter-select:focus { border-color: var(--accent); }
+
+/* Range Filter Boxes */
+.filter-range-group {
+  display: flex; align-items: center; gap: 8px; background: var(--surface);
+  border: 1px solid var(--border); padding: 4px 8px; border-radius: var(--radius);
+}
+.filter-label { font-size: 11px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+.range-inputs { display: flex; align-items: center; gap: 4px; }
+.range-inputs input {
+  width: 55px; background: var(--card); border: 1px solid var(--border); color: var(--text);
+  padding: 4px 6px; border-radius: 4px; font-size: 11px; font-family: var(--mono); text-align: center; outline: none;
+}
+.range-inputs input:focus { border-color: var(--accent); }
+
+/* Preset Buttons */
+.fbtn {
+  background: var(--card2); border: 1px solid var(--border); color: var(--text);
+  padding: 6px 11px; border-radius: var(--radius); font-size: 11px; cursor: pointer;
+  font-family: var(--font); font-weight: 500; transition: all 0.2s; white-space: nowrap;
+}
+.fbtn:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,212,255,0.08); }
+.fbtn.preset-blue { background: rgba(59, 130, 246, 0.12); border-color: rgba(59, 130, 246, 0.3); color: #60a5fa; }
+.fbtn.preset-amber { background: rgba(245, 158, 11, 0.12); border-color: rgba(245, 158, 11, 0.3); color: #fbbf24; }
+.fbtn.preset-green { background: rgba(16, 185, 129, 0.12); border-color: rgba(16, 185, 129, 0.3); color: #34d399; }
+
+.fbtn.active {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: rgba(0, 212, 255, 0.22) !important;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.35);
+  font-weight: 700 !important;
+}
+
+/* TradingView Link Style */
+.tv-link {
+  color: var(--accent); text-decoration: none; font-family: var(--mono);
+  font-weight: 700; font-size: 12.5px; transition: all 0.2s; display: inline-flex; align-items: center; gap: 4px;
+}
+.tv-link:hover { color: #ffffff; text-decoration: underline; }
+
+/* Clickable Group Links */
+.group-click-link { color: var(--text); font-weight: 700; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link:hover { color: var(--accent); text-decoration: underline; }
+.group-click-link-sub { color: var(--muted); font-size: 10.5px; cursor: pointer; transition: color 0.15s; text-transform: capitalize; }
+.group-click-link-sub:hover { color: var(--accent); text-decoration: underline; }
+
+/* TABLE WRAP & STYLING */
+.table-wrap { 
+  overflow-x: auto; 
+  overflow-y: auto; 
+  max-height: 68vh;
+  border-radius: 10px; 
+  border: 1px solid var(--border); 
+  width: 100%; 
+  background: var(--card); 
+  position: relative; 
+}
+table { width: 100%; border-collapse: collapse; min-width: 2550px; }
+
+thead th {
+  background: var(--card2); font-size: 9.5px; font-weight: 600; color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px; padding: 7px 8px; text-align: center;
+  white-space: nowrap; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 30;
+  cursor: pointer; user-select: none;
+}
+thead th:hover { color: var(--accent); }
+thead th.sticky-col-merged { text-align: left; }
+
+/* SECTOR COLUMN: HEADING CENTERED, CELL DATA LEFT ALIGNED */
+thead th.col-sector { text-align: center !important; }
+tbody td.col-sector { text-align: left !important; }
+
+tbody td { padding: 4px 6px; border-bottom: 1px solid var(--border); font-size: 11px; white-space: nowrap; font-family: var(--mono); text-align: center; }
+tbody td.sticky-col-merged { text-align: left; }
+tbody tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Sticky Column 1 */
+.sticky-col-merged {
+  position: sticky; left: 0; z-index: 20; background: var(--card);
+  border-right: 1px solid var(--border); width: 145px; min-width: 145px; max-width: 145px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+
+/* Badges & RS Rating Styling */
+.badge { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 4px; font-family: var(--font); }
+.badge.green { background: rgba(0,230,118,0.12); color: var(--green); }
+.badge.amber { background: rgba(255,171,0,0.12); color: var(--amber); }
+.badge.purple { background: rgba(167,139,250,0.12); color: var(--purple); }
+
+.rank-badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; font-family: var(--mono); text-align: center; min-width: 38px; }
+
+.pnl-pos { color: var(--green); font-weight: 600; }
+.pnl-neg { color: var(--red); font-weight: 600; }
+
+/* Pattern Badges inside row columns */
+.pattern-badge {
+  font-size: 9px; font-weight: 700; padding: 1px 5px; border-radius: 3px; display: inline-block; margin-right: 3px;
+}
+.pat-orange { background: rgba(255, 152, 0, 0.2); color: #ff9800; border: 1px solid #ff980044; }
+.pat-cyan { background: rgba(0, 212, 255, 0.2); color: var(--accent); border: 1px solid rgba(0, 212, 255, 0.3); }
+.pat-purple { background: rgba(167, 139, 250, 0.2); color: var(--purple); border: 1px solid rgba(167, 139, 250, 0.3); }
+.pat-green { background: rgba(0, 230, 118, 0.15); color: var(--green); border: 1px solid rgba(0, 230, 118, 0.3); }
+
+/* Modal Overlay */
+.modal-overlay { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; width: 100%; max-width: 1200px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+.modal-header { padding: 12px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; background: var(--card2); }
+.modal-body { padding: 16px; overflow-y: auto; flex: 1; }
+
+/* MODERN LOADER UI */
+.loading { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 60px 20px; color: var(--muted); font-size: 13px; text-align: center; }
+.loading-ring {
+  width: 36px; height: 36px; border: 3px solid rgba(0, 212, 255, 0.15); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.25);
+}
+.loading-text-main { font-size: 14px; font-weight: 700; color: var(--accent); letter-spacing: 0.5px; }
+.loading-text-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { background: var(--bg); border-top: 1px solid var(--border); padding: 20px 32px; text-align: center; color: var(--muted); font-size: 12px; font-family: var(--mono); margin-top: 30px; }
+footer span { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Navigation Header -->
+<nav>
+  <div style="display:flex;align-items:center">
+    <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+    <span class="brand-tag">Trade Smarter. Track Everything.</span>
+  </div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html">Market Breadth</a>
+    <a href="stock-screener.html" class="active">Stock Screener</a>
+    <a href="relative-returns.html">Relative Returns</a>
+    <a href="rs-ranking.html">RS Ranking</a>
+    <a href="sector-rs.html">Sector RS</a>
+    <a href="charts.html">Charts</a>
+  </div>
+</nav>
+
+<!-- Main Screener Area -->
+<div class="screener-wrap">
+  
+  <div class="page-header">
+    <div>
+      <div class="page-title">
+        <i class="fa-solid fa-sliders text-accent"></i> Stock Master Screener
+        
+        <!-- FORMATTED LAST DATA UPDATE TIMESTAMP BADGE -->
+        <span id="last-update-tag" style="font-size:11px; font-weight:500; color:var(--accent); background:rgba(0,212,255,0.08); padding:3px 10px; border-radius:20px; border:1px solid rgba(0,212,255,0.2); margin-left:10px; display:inline-flex; align-items:center; gap:5px">
+          <i class="fa-regular fa-clock"></i> Last Updated: <span id="last-update-val" style="font-weight:700">Syncing...</span>
+        </span>
+      </div>
+      <div class="page-sub">NSE Stock Universe — Clean Technical & Fundamental Matrix — Highly Aligned Performance Hub</div>
+    </div>
+    <div>
+      <button class="fbtn" onclick="fetchStockMasterData()"><i class="fa-solid fa-arrows-rotate mr-1"></i> Refresh Data</button>
+    </div>
+  </div>
+
+  <!-- Advanced Filters Dashboard -->
+  <div class="panel">
+    
+    <!-- Row 1: Search, Dropdowns & Export Buttons -->
+    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:12px">
+      <input type="text" id="search-input" class="search-box" placeholder="🔍 Search Company / Symbol...">
+      
+      <select id="sector-filter" class="filter-select"><option value="">All Sectors</option></select>
+      <select id="industry-filter" class="filter-select"><option value="">All Industries</option></select>
+      <select id="cap-filter" class="filter-select">
+        <option value="">All Market Caps</option>
+        <option value="Large Cap">Large Cap</option>
+        <option value="Mid Cap">Mid Cap</option>
+        <option value="Small Cap">Small Cap</option>
+      </select>
+
+      <!-- Action & Export Buttons -->
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="fbtn" onclick="resetFilters()"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+        <button class="fbtn preset-green" onclick="saveFiltersToLocalStorage()"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+        <button class="fbtn preset-green" style="background:rgba(255,61,90,0.12); border-color:rgba(255,61,90,0.3); color:var(--red);" onclick="clearSavedFilters()"><i class="fa-solid fa-trash"></i> Clear</button>
+        
+        <!-- TABLE DOWNLOAD/EXPORT OPTIONS -->
+        <button class="fbtn preset-blue" onclick="exportTable('copy')" title="Copy filtered table data to clipboard"><i class="fa-solid fa-copy"></i> Copy</button>
+        <button class="fbtn preset-blue" onclick="exportTable('csv')" title="Download filtered table as CSV file"><i class="fa-solid fa-file-csv"></i> CSV</button>
+        <button class="fbtn preset-blue" onclick="exportTable('excel')" title="Download filtered table as Excel file"><i class="fa-solid fa-file-excel"></i> Excel</button>
+      </div>
+    </div>
+
+    <!-- Row 2: EDITABLE SLIDERS & PARAMETERS -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:16px; margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border)">
+      <span style="font-size:11px; color:var(--muted); font-weight:700">⚙️ Adjustable Parameters (Set Thresholds):</span>
+      
+      <div class="filter-range-group" title="Set Volume Shocker Multiple (Volume compared to 30-Day Average Volume)">
+        <span class="filter-label">🔊 Vol Shocker >=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-vol-shocker" value="5.0" step="0.5" style="width:45px" onchange="onParamInputChange('param-vol-shocker')">
+        </div>
+        <span style="font-size:10px; color:var(--muted)">x</span>
+      </div>
+
+      <div class="filter-range-group" title="Set Gap Up percentage threshold (Today's Low price compared to yesterday's High price)">
+        <span class="filter-label">📦 Gap Up >=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-gap" value="1.0" step="0.1" style="width:45px" onchange="onParamInputChange('param-gap')">
+        </div>
+        <span style="font-size:10px; color:var(--muted)">%</span>
+      </div>
+
+      <div class="filter-range-group" title="Set dynamic proximity distance for Pullback checks (Close price relative distance to +/- 10/20 EMA)">
+        <span class="filter-label">📈 Pullback Proximity <=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-pullback" value="1.5" step="0.1" style="width:45px" onchange="onParamInputChange('param-pullback')">
+        </div>
+        <span style="font-size:10px; color:var(--muted)">%</span>
+      </div>
+
+      <div class="filter-range-group" title="Set threshold distance from 52-Week High (Active when 'Near 52W High' badge is toggled)">
+        <span class="filter-label">Away from 52WH >=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-away-52w" value="-25" step="1.0" style="width:45px" oninput="onParamInputChange('filterAway52W')">
+        </div>
+        <span style="font-size:10px; color:var(--muted)">%</span>
+      </div>
+
+      <div class="filter-range-group" title="Turnover threshold in INR Crores (Active when 'Min Turnover' badge is toggled)">
+        <span class="filter-label">💰 Turnover (Cr) >=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-turnover" value="5" step="1.0" style="width:45px" oninput="onParamInputChange('filterTurnover')">
+        </div>
+        <span style="font-size:10px; color:var(--muted)">Cr</span>
+      </div>
+
+      <div class="filter-range-group" title="RSI threshold value (Active when 'Min RSI' badge is toggled)">
+        <span class="filter-label">📈 RSI >=</span>
+        <div class="range-inputs">
+          <input type="number" id="param-rsi" value="60" step="1.0" style="width:45px" oninput="onParamInputChange('filterRSI')">
+        </div>
+      </div>
+    </div>
+
+    <!-- Row 3: TECHNICAL SCANNER TOGGLES AND PRESETS -->
+    <div style="display:flex; flex-wrap:wrap; align-items:center; gap:6px">
+      <span style="font-size:11px; color:var(--muted); font-weight:700">⚡ Technical Scanner (Toggle to Filter):</span>
+      
+      <!-- Presets with Hover Descriptions -->
+      <button class="fbtn rsi-preset preset-blue" onclick="setRsiPreset(60, this)" title="Filters stocks with RSI (14) >= 60">🚀 RSI > 60</button>
+      <button class="fbtn rsi-preset preset-blue" onclick="setRsiPreset(70, this)" title="Filters stocks with RSI (14) >= 70">🔥 RSI > 70</button>
+      <button class="fbtn turnover-preset preset-amber" onclick="setTurnoverPreset(5, this)" title="Filters stocks with 30-Day Average Daily Turnover Volume >= ₹5 Crores">💰 Vol > 5 Cr</button>
+      <button class="fbtn turnover-preset preset-green" onclick="setTurnoverPreset(50, this)" title="Filters stocks with 30-Day Average Daily Turnover Volume >= ₹50 Crores">💎 Vol > 50 Cr</button>
+
+      <!-- Parameter filter badges -->
+      <button class="fbtn scan-tag-btn preset-blue" id="btn-filterAway52W" onclick="toggleScanTag('filterAway52W', this)" title="Filters stocks based on your Away from 52WH parameter limit">🎯 Near 52W High</button>
+      <button class="fbtn scan-tag-btn preset-amber" id="btn-filterTurnover" onclick="toggleScanTag('filterTurnover', this)" title="Filters stocks matching your Turnover (Cr) parameter threshold">💰 Min Turnover</button>
+      <button class="fbtn scan-tag-btn preset-blue" id="btn-filterRSI" onclick="toggleScanTag('filterRSI', this)" title="Filters stocks based on your RSI parameter limit">📈 Min RSI</button>
+
+      <!-- EMA Filters -->
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('abvEMA10', this)">📈 Close > EMA 10</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('abvEMA20', this)">📈 Close > EMA 20</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('abvEMA50', this)">📈 Close > EMA 50</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('abvEMA200', this)">📈 Close > EMA 200</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('belEMA200', this)">📉 Close < EMA 200</button>
+
+      <!-- EMA Pullbacks -->
+      <button class="fbtn scan-tag-btn preset-amber" onclick="toggleScanTag('near10EMA', this)">📈 Pullback Near 10 EMA</button>
+      <button class="fbtn scan-tag-btn preset-amber" onclick="toggleScanTag('near20EMA', this)">📈 Pullback Near 20 EMA</button>
+
+      <!-- Scanners with UPDATED GAP UP DEFINITION -->
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('volShocker', this)">🔊 Volume Shocker</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('isGapUp', this)" title="Filters stocks where today's Low price is strictly higher than previous day's High price (Low > Yesterday's High)">📦 Gap Up (Low > Prev High)</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('volShockerIn50', this)">🔊 Vol Shocker (1-in-50 Days)</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('gapUpIn50', this)" title="Filters stocks with at least 1 Gap Up day (Low > Prev High) in the last 50 days">📦 Gap Up (1-in-50 Days)</button>
+      
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isIB', this)">▭ Inside Bar (IB)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isDIB', this)">▭ Double IB (DIB)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isWIB', this)">💎 Weekly IB (WIB)</button>
+      <button class="fbtn scan-tag-btn preset-purple" onclick="toggleScanTag('isMIB', this)" title="Monthly Inside Bar pattern">🌙 Monthly IB (MIB)</button>
+      
+      <button class="fbtn scan-tag-btn preset-amber" onclick="toggleScanTag('isNR7', this)" title="Narrowest Range in last 7 days">📏 NR7 Candle</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('vol50k', this)" title="Daily Volume greater than 50,000 shares">📊 Vol > 50k</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isTrend66', this)" title="Checks if percentage difference between Max & Min close over last 66 days relative to min close is at least 30%">🚀 Uptrend (66D >= 30%)</button>
+
+      <button class="fbtn scan-tag-btn preset-amber" onclick="toggleScanTag('isMCP', this)">🌀 Mini Coil Pattern (MCP)</button>
+      <button class="fbtn scan-tag-btn preset-amber" onclick="toggleScanTag('tight3', this)">📏 3-Day Close Tight (<6%)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('is3WTC', this)">🌟 Weekly Tight Close (3WTC)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('is4WTC', this)">🌟 Weekly Tight Close (4WTC)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('is5WTC', this)">🌟 Weekly Tight Close (5WTC)</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('comp3', this)">🔥 Compression (<3%)</button>
+      <button class="fbtn scan-tag-btn preset-blue" onclick="toggleScanTag('comp4', this)">🔥 Compression (<4%)</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('strongBody', this)" title="Bullish Green Candle (Close > Open, Body >= 4%)">🚀 Strong Candle (Today)</button>
+      
+      <!-- STRONG CANDLE (1-IN-20 DAYS) WITH EXACT DESCRIPTION TOOLTIP -->
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('strongCandle20', this)" title="This filter finds stocks if there has been at least 1 day in the last 20 days where the daily closing price increased by at least 4% compared to the daily opening price (Close > Open, Body >= 4%).">🚀 Strong Candle (1-in-20 Days)</button>
+
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('closeAtLeast75of66High', this)">🛡️ Close >= 75% of 66D High</button>
+
+      <!-- M, Q, Y High Closes -->
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isMHighClose', this)">📈 Monthly High Close</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isQHighClose', this)">📈 Quarterly High Close</button>
+      <button class="fbtn scan-tag-btn preset-green" onclick="toggleScanTag('isYHighClose', this)">📈 Yearly High Close</button>
+
+      <!-- UPDATED SPECIAL CUSTOM MICKKK FILTER BADGE -->
+      <button class="fbtn scan-tag-btn preset-green" style="border-color:var(--accent); font-weight:bold; background:rgba(0, 212, 255, 0.12)" id="btn-mickkkFilter" onclick="toggleScanTag('mickkkFilter', this)" title="🔥 Complete MICKKK Swing Breakout Filter Rules:&#10;1. (1+ Gap Up [Low > Prev High] in last 90D) OR (1+ Vol Shocker >= 5x in last 90D).&#10;2. Pullback close near 10 EMA or 20 EMA.&#10;3. Daily Candle Range < 3%.&#10;4. At least 1 Strong Candle (Close > Open, Body >= 4%) in last 20 Days.&#10;5. Close >= 75% of 262D (1Y) High OR 66D (Q) High.&#10;6. 30D Avg Turnover > 5 Crores.&#10;7. 3-Day Tight Close < 6%.">🔥 MICKKK Filter</button>
+    </div>
+
+    <!-- Stock count details -->
+    <div style="display:flex; justify-content:flex-end; font-size:11px; color:var(--muted); font-family:var(--mono); margin-top:10px">
+      Showing <span id="showing-count" style="color:var(--accent); font-weight:bold; margin:0 3px">0</span> of <span id="total-count" style="color:var(--text); margin-left:3px">0</span> Stocks
+    </div>
+
+  </div>
+
+  <!-- Table Section -->
+  <div class="table-wrap">
+    <table id="screener-table">
+      <thead>
+        <tr>
+          <th class="sticky-col-merged" onclick="sortTable('symbol')" style="width:145px">STOCK / SYMBOL ⇅</th>
+          
+          <!-- RS RATING COLUMN WITH EMBEDDED DROPDOWN SELECTOR IN HEADER -->
+          <th class="c" id="th-rs-rank" onclick="sortTable(selectedRsRankType)" style="width:110px; padding:3px 6px">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:2px">
+              <span style="color:var(--accent); font-size:9.5px; font-weight:700">RS RATING 🏆 ⇅</span>
+              <select id="rs-rank-type-select" onchange="onRsTypeChange(event)" onclick="event.stopPropagation()" style="background:var(--card); border:1px solid var(--border); color:var(--accent); font-size:9px; font-weight:700; font-family:var(--font); border-radius:4px; padding:1px 3px; outline:none; cursor:pointer" title="Select RS Rating type to calculate and display">
+                <option value="overallRank">Overall RS</option>
+                <option value="rankT1">Self NT (T1)</option>
+                <option value="rankT2">Self Def (T2)</option>
+                <option value="rankT3">Rel NT (T3)</option>
+                <option value="rankT4">Rel Def (T4)</option>
+                <option value="rankT5">Short Term (T5)</option>
+              </select>
+            </div>
+          </th>
+
+          <th class="r" onclick="sortTable('mcap')" style="width:110px">MARKET CAP (CR) ⇅</th>
+          <th onclick="sortTable('category')" style="width:95px">CATEGORY ⇅</th>
+          
+          <!-- SECTOR / INDUSTRY COLUMN HEADING CENTERED -->
+          <th class="col-sector" onclick="sortTable('sector')" style="width:145px; color:var(--accent)">SECTOR / INDUSTRY ⇅</th>
+          
+          <th class="r" onclick="sortTable('close')" style="width:100px">PRICE (₹) ⇅</th>
+          <th class="r" onclick="sortTable('turnover')" style="width:110px; color:var(--amber)">20D TURNOVER ⇅</th>
+          
+          <th class="r" onclick="sortTable('dailyPct')" style="width:75px">1D % ⇅</th>
+          <th class="r" onclick="sortTable('weeklyPct')" style="width:75px">1W % ⇅</th>
+          <th class="r" onclick="sortTable('d15Pct')" style="width:75px">15D % ⇅</th>
+          <th class="r" onclick="sortTable('monthlyPct')" style="width:75px">1M % ⇅</th>
+          <th class="r" onclick="sortTable('quarterlyPct')" style="width:75px">Q % ⇅</th>
+          <th class="r" onclick="sortTable('halfYearlyPct')" style="width:75px">HY % ⇅</th>
+          <th class="r" onclick="sortTable('yearlyPct')" style="width:75px">1Y % ⇅</th>
+
+          <th class="r" onclick="sortTable('range5D')" style="width:100px; color:var(--accent)">5D Range % ⇅</th>
+          <th class="r" onclick="sortTable('range10D')" style="width:100px; color:var(--accent)">10D Range % ⇅</th>
+          <th class="r" onclick="sortTable('range20D')" style="width:100px; color:var(--accent)">20D Range % ⇅</th>
+          <th class="r" onclick="sortTable('range30D')" style="width:100px; color:var(--accent)">30D Range % ⇅</th>
+
+          <th class="r" onclick="sortTable('w52High')" style="width:85px">52W HIGH ⇅</th>
+          <th class="r" onclick="sortTable('w52Low')" style="width:85px">52W LOW ⇅</th>
+          <th class="r" onclick="sortTable('away52wHigh')" style="width:85px">AWAY 52WH ⇅</th>
+          <th class="r" style="color:var(--muted)">AWAY 52WL ⇅</th>
+          <th class="c" onclick="sortTable('rsi')" style="width:70px; color:var(--accent)">RSI ⇅</th>
+
+          <th style="width:240px; color:var(--accent)">DETECTED PATTERNS 🛠️</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    
+    <!-- MODERN LOADER UI -->
+    <div id="loading-spinner" class="loading">
+      <div class="loading-ring"></div>
+      <div>
+        <div class="loading-text-main">⚡ Analyzing Live NSE Universe Matrix</div>
+        <div class="loading-text-sub">Syncing Daily Candlesticks, Moving Averages & Multi-Timeframe Scans...</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Sector / Industry Drilldown Modal -->
+<div id="stocks-modal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span id="modal-group-title" style="font-size:14px; font-weight:700; color:var(--accent)">—</span>
+      <button onclick="closeModal()" class="fbtn" style="padding:2px 8px">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="table-wrap">
+        <table style="min-width:1100px">
+          <thead>
+            <tr>
+              <th onclick="sortModalTable('symbol')" style="width:100px">Symbol 📈 ⇅</th>
+              <th onclick="sortModalTable('name')" style="width:180px">Company Name ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT1')">Self NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT2')">Self Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT3')">Rel NT Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT4')">Rel Def Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('rankT5')">ST Rk ⇅</th>
+              <th class="c" onclick="sortModalTable('overallRank')" style="color:var(--accent)">Overall RS 🏆 ⇅</th>
+              <th class="r" onclick="sortModalTable('mcap')">Market Cap ⇅</th>
+              <th class="r" onclick="sortModalTable('close')">Price (₹) ⇅</th>
+              <th class="r" onclick="sortModalTable('turnover')">Turnover ⇅</th>
+              <th class="c" onclick="sortModalTable('rsi')">RSI ⇅</th>
+            </tr>
+          </thead>
+          <tbody id="modal-stocks-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer><span>MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<!-- Logic Script -->
+<script>
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzeuesRdQRyxxCSrlR4IBl2fIVba4iVx4S69pIhozzLXmc_MvzWuPJBOvjTgnFgbbZJuw/exec';
+const CHARTS_DATABASE_URL = 'https://script.google.com/macros/s/AKfycbwgWAn-ZuLBS5VBjKDwI6TzYXnu-voBuZ1KAnIE7cOEgiHUC1vb_NSir5RuifBMoHsw/exec';
+
+let rawMasterStocks = [];
+let rawRelStocks = [];
+let rawScannerStocks = [];
+
+let stocks = [];
+let filteredStocks = [];
+let currentSort = { column: 'mcap', direction: 'desc' };
+
+let activeModalStocks = [];
+let modalSort = { column: 'overallRank', direction: 'asc' };
+
+let activeScanTags = new Set();
+let selectedRsRankType = 'overallRank'; // Default RS Rating metric
+
+window.addEventListener('DOMContentLoaded', () => {
+  fetchStockMasterData();
+  setupEventListeners();
+});
+
+// SAFE PERCENTAGE NORMALIZATION
+function normalizePct(val) {
+  if (val === null || val === undefined || val === '' || isNaN(val)) return null;
+  let num = Number(val);
+  if (Math.abs(num) > 0 && Math.abs(num) <= 1.0) {
+    return num * 100;
+  }
+  return num;
+}
+
+// Extract Stock Array flexibly from JSON response regardless of object structure
+function extractStockArray(jsonVal) {
+  if (!jsonVal) return [];
+  if (Array.isArray(jsonVal)) return jsonVal;
+  if (jsonVal.stocks && Array.isArray(jsonVal.stocks)) return jsonVal.stocks;
+  if (jsonVal.data && Array.isArray(jsonVal.data)) return jsonVal.data;
+  return [];
+}
+
+// FORMAT DATE DISPLAY CLEANLY (No fake today date!)
+function formatDateDisplay(rawDate) {
+  if (!rawDate) return "Sheet Not Updated";
+  try {
+    let d = new Date(rawDate);
+    if (isNaN(d.getTime())) return rawDate;
+    
+    const day = String(d.getDate()).padStart(2, '0');
+    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const month = monthNames[d.getMonth()];
+    const year = d.getFullYear();
+    let hours = d.getHours();
+    const minutes = String(d.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const hoursStr = String(hours).padStart(2, '0');
+    return `${day} ${month} ${year}, ${hoursStr}:${minutes} ${ampm}`;
+  } catch(e) {
+    return rawDate;
+  }
+}
+
+// CALCULATE INDUSTRY-STANDARD RS RATING PERCENTILE (1 to 99)
+function calculateRsRating(rank, total) {
+  if (!rank || !total || total <= 0) return '-';
+  let rating = Math.round(((total - rank + 1) / total) * 99);
+  if (rating > 99) rating = 99;
+  if (rating < 1) rating = 1;
+  return rating;
+}
+
+// RENDER RS RATING BADGE (IBD / MarketSmith Style)
+function getRsRatingBadge(rating, rank) {
+  if (!rating || rating === '-') return '—';
+  let r = Number(rating);
+  let style = '';
+
+  if (r >= 90) {
+    style = 'background:rgba(0, 230, 118, 0.2); color:#00e676; border:1px solid rgba(0, 230, 118, 0.5); font-weight:800; min-width:38px';
+  } else if (r >= 70) {
+    style = 'background:rgba(0, 212, 255, 0.15); color:#00d4ff; border:1px solid rgba(0, 212, 255, 0.4); font-weight:700; min-width:38px';
+  } else if (r >= 50) {
+    style = 'background:rgba(255, 171, 0, 0.15); color:#ffab00; border:1px solid rgba(255, 171, 0, 0.4); min-width:38px';
+  } else {
+    style = 'background:rgba(255, 61, 90, 0.12); color:#ff3d5a; border:1px solid rgba(255, 61, 90, 0.3); min-width:38px';
+  }
+
+  return `<span class="rank-badge" style="${style}" title="RS Rating: ${r}/99 (Rank #${rank})">${r}</span>`;
+}
+
+async function fetchStockMasterData() {
+  const spinner = document.getElementById('loading-spinner');
+  if (spinner) spinner.style.display = 'flex';
+
+  try {
+    const results = await Promise.allSettled([
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=stockMaster').then(res => res.json()),
+      fetch(GOOGLE_APPS_SCRIPT_URL + '?action=relativeReturns').then(res => res.json()),
+      fetch(CHARTS_DATABASE_URL + '?action=stockMaster').then(res => res.json())
+    ]);
+
+    if (results[0].status === 'fulfilled') {
+      rawMasterStocks = extractStockArray(results[0].value);
+    }
+    if (results[1].status === 'fulfilled') {
+      rawRelStocks = extractStockArray(results[1].value);
+    }
+    if (results[2].status === 'fulfilled') {
+      rawScannerStocks = extractStockArray(results[2].value);
+    }
+
+    // EXTRACT AND DISPLAY ACTUAL LAST DATA UPDATE TIMESTAMP FROM GOOGLE SHEET
+    let lastUpdatedDate = '';
+    [results[0], results[1], results[2]].forEach(res => {
+      if (res.status === 'fulfilled' && res.value) {
+        const val = res.value;
+        if (val.lastUpdated) lastUpdatedDate = val.lastUpdated;
+        else if (val.date) lastUpdatedDate = val.date;
+        else if (val.updatedAt) lastUpdatedDate = val.updatedAt;
+        else if (val.timestamp) lastUpdatedDate = val.timestamp;
+      }
+    });
+
+    const dateValEl = document.getElementById('last-update-val');
+    if (dateValEl) {
+      dateValEl.textContent = formatDateDisplay(lastUpdatedDate);
+    }
+
+    calculateStockRsRanks();
+  } catch (err) {
+    console.error("Fetch error:", err);
+  } finally {
+    if (spinner) spinner.style.display = 'none';
+  }
+}
+
+function calculateStockRsRanks() {
+  if (!rawMasterStocks || !rawMasterStocks.length) return;
+
+  const relMap = {};
+  if (Array.isArray(rawRelStocks)) {
+    rawRelStocks.forEach(s => {
+      if (s && s.symbol) relMap[String(s.symbol).toUpperCase()] = s;
+    });
+  }
+
+  const scannerMap = {};
+  if (Array.isArray(rawScannerStocks)) {
+    rawScannerStocks.forEach(s => {
+      if (s && s.symbol) scannerMap[String(s.symbol).toUpperCase()] = s;
+    });
+  }
+
+  const processed = rawMasterStocks.map(s => {
+    if (!s || !s.symbol) return null;
+    const symUpper = String(s.symbol).toUpperCase();
+    const rel = relMap[symUpper] || {};
+    const scan = scannerMap[symUpper] || {};
+
+    const dailyPct = normalizePct(s.dailyPct);
+    const weeklyPct = normalizePct(s.weeklyPct) || 0;
+    const d15Pct = normalizePct(s.d15Pct) || 0;
+    const monthlyPct = normalizePct(s.monthlyPct) || 0;
+    const quarterlyPct = normalizePct(s.quarterlyPct) || 0;
+    const halfYearlyPct = normalizePct(s.halfYearlyPct) || 0;
+    const yearlyPct = normalizePct(s.yearlyPct) || 0;
+
+    const away52wHigh = normalizePct(s.away52wHigh);
+    const away52wLow = normalizePct(s.away52wLow);
+
+    // Self Return Scores
+    const scoreT1 = (weeklyPct * 0.40) + (d15Pct * 0.30) + (monthlyPct * 0.20) + (quarterlyPct * 0.10);
+    const scoreT2 = (weeklyPct * 0.10) + (monthlyPct * 0.20) + (quarterlyPct * 0.25) + (halfYearlyPct * 0.25) + (yearlyPct * 0.20);
+    const scoreT5 = (weeklyPct * 0.40) + (d15Pct * 0.35) + (monthlyPct * 0.25);
+
+    // Relative Return Scores (T3 & T4)
+    const scoreT3 = rel.scoreT3 !== undefined ? rel.scoreT3 : scoreT1;
+    const scoreT4 = rel.scoreT4 !== undefined ? rel.scoreT4 : scoreT2;
+
+    const trend66Pct = scan.trend66Pct !== undefined ? scan.trend66Pct : (s.trend66Pct !== undefined ? s.trend66Pct : null);
+    const isTrend66 = scan.isTrend66 || (trend66Pct !== null && trend66Pct >= 30) || false;
+
+    const volumeVal = scan.volume || s.volume || (s.close && s.turnover ? (s.turnover * 10000000 / s.close) : 0);
+    const candleRangePct = (s.high && s.low && s.close) ? (((s.high - s.low) / s.close) * 100) : null;
+
+    // Check if today is a strong GREEN candle (>4% body)
+    const isTodayStrongGreen = (s.close && s.open && s.close > s.open) ? ((((s.close - s.open) / s.open) * 100) >= 4.0) : false;
+
+    // COMPREHENSIVE MULTI-PROPERTY CHECK FOR STRONG CANDLE (1-IN-20 DAYS) TO PREVENT ZERO STOCKS
+    const isStrongCandle20 = 
+      scan.strongCandle20 === true ||
+      scan.strongBody20 === true ||
+      scan.strongCandleIn20 === true ||
+      scan.strongBodyIn20 === true ||
+      (scan.strongBody20Count && scan.strongBody20Count >= 1) ||
+      (scan.strongBodyCount20 && scan.strongBodyCount20 >= 1) ||
+      (scan.bullishBody4Count20 && scan.bullishBody4Count20 >= 1) ||
+      (scan.greenBody4Count20 && scan.greenBody4Count20 >= 1) ||
+      (scan.strongBody30Count && scan.strongBody30Count >= 1) ||
+      scan.strongBullishBody === true ||
+      scan.bullishBody4In30 === true ||
+      scan.greenBody4In30 === true ||
+      scan.strongBody === true ||
+      isTodayStrongGreen ||
+      (dailyPct !== null && dailyPct >= 4.0) ||
+      false;
+
+    return {
+      ...s,
+      dailyPct, weeklyPct, d15Pct, monthlyPct, quarterlyPct, halfYearlyPct, yearlyPct,
+      away52wHigh, away52wLow,
+      scoreT1, scoreT2, scoreT3, scoreT4, scoreT5,
+      volume: volumeVal,
+
+      range5D: scan.range5D !== undefined ? scan.range5D : null,
+      range10D: scan.range10D !== undefined ? scan.range10D : null,
+      range20D: scan.range20D !== undefined ? scan.range20D : null,
+      range30D: scan.range30D !== undefined ? scan.range30D : null,
+
+      volRatio: scan.volRatio || 0,
+      volShockerIn50: scan.volShockerIn50 || false,
+      volShockerIn90: scan.volShockerIn90 || scan.volShockerIn50 || (scan.volRatio >= 5.0) || false,
+      isGapUp: scan.isGapUp || false,
+      gapUpIn50: scan.gapUpIn50 || false,
+      gapPct: scan.gapPct || 0,
+      distE10: scan.distE10 !== undefined ? scan.distE10 : 999,
+      distE20: scan.distE20 !== undefined ? scan.distE20 : 999,
+      distE50: scan.distE50 !== undefined ? scan.distE50 : 999,
+      distE200: scan.distE200 !== undefined ? scan.distE200 : 999,
+      closeAtLeast75of66High: scan.closeAtLeast75of66High || false,
+      isMHighClose: scan.isMHighClose || false,
+      isQHighClose: scan.isQHighClose || false,
+      isYHighClose: scan.isYHighClose || false,
+      isIB: scan.isIB || false,
+      isDIB: scan.isDIB || false,
+      
+      comp3: scan.comp3 || (candleRangePct !== null && candleRangePct < 3.0) || false,
+      comp4: scan.comp4 || (candleRangePct !== null && candleRangePct < 4.0) || false,
+      
+      strongBody: scan.strongBody || isTodayStrongGreen || false,
+      isStrongCandle20: isStrongCandle20,
+      
+      isWIB: scan.isWIB || false,
+      tight3: scan.tight3 || false,
+      isMCP: scan.isMCP || false,
+      is3WTC: scan.is3WTC || false,
+      is4WTC: scan.is4WTC || false,
+      is5WTC: scan.is5WTC || false,
+
+      isMIB: scan.isMIB || false,
+      isNR7: scan.isNR7 || false,
+      vol50k: volumeVal >= 50000,
+      isTrend66: isTrend66,
+
+      gapUp1PctIn90: scan.gapUp1PctIn90 || scan.gapUpIn50 || scan.isGapUp || false,
+      closeAtLeast75of262High: scan.closeAtLeast75of262High || (s.w52High && s.close && s.close >= 0.75 * s.w52High) || false
+    };
+  }).filter(Boolean);
+
+  assignRank(processed, 'scoreT1', 'rankT1');
+  assignRank(processed, 'scoreT2', 'rankT2');
+  assignRank(processed, 'scoreT3', 'rankT3');
+  assignRank(processed, 'scoreT4', 'rankT4');
+  assignRank(processed, 'scoreT5', 'rankT5');
+
+  processed.forEach(s => {
+    s.avgRank5 = ((s.rankT1 || 999) + (s.rankT2 || 999) + (s.rankT3 || 999) + (s.rankT4 || 999) + (s.rankT5 || 999)) / 5;
+  });
+
+  processed.sort((a, b) => a.avgRank5 - b.avgRank5);
+  processed.forEach((s, idx) => s.overallRank = idx + 1);
+
+  // CALCULATE RS RATINGS (1-99 PERCENTILES) FOR ALL TYPES
+  const N = processed.length;
+  processed.forEach(s => {
+    s.ratingOverall = calculateRsRating(s.overallRank, N);
+    s.ratingRankT1 = calculateRsRating(s.rankT1, N);
+    s.ratingRankT2 = calculateRsRating(s.rankT2, N);
+    s.ratingRankT3 = calculateRsRating(s.rankT3, N);
+    s.ratingRankT4 = calculateRsRating(s.rankT4, N);
+    s.ratingRankT5 = calculateRsRating(s.rankT5, N);
+  });
+
+  stocks = processed;
+
+  loadSavedFilters();
+  populateDropdowns();
+  applyFilters();
+
+  if (stocks.length > 0 && filteredStocks.length === 0) {
+    console.warn("Saved filters resulted in 0 stocks on initial load. Auto resetting filters.");
+    resetFilters();
+  }
+}
+
+function assignRank(list, scoreKey, rankKey) {
+  list.sort((a, b) => (b[scoreKey] || 0) - (a[scoreKey] || 0));
+  list.forEach((item, idx) => item[rankKey] = idx + 1);
+}
+
+function setupEventListeners() {
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('sector-filter').addEventListener('change', applyFilters);
+  document.getElementById('industry-filter').addEventListener('change', applyFilters);
+  document.getElementById('cap-filter').addEventListener('change', applyFilters);
+
+  document.getElementById('param-vol-shocker').addEventListener('input', applyFilters);
+  document.getElementById('param-gap').addEventListener('input', applyFilters);
+  document.getElementById('param-pullback').addEventListener('input', applyFilters);
+}
+
+function onRsTypeChange(event) {
+  if (event) event.stopPropagation();
+  const select = document.getElementById('rs-rank-type-select');
+  selectedRsRankType = select ? select.value : 'overallRank';
+  renderTable();
+}
+
+function onParamInputChange(tagKey) {
+  if (tagKey && !activeScanTags.has(tagKey)) {
+    activeScanTags.add(tagKey);
+    const btn = document.getElementById('btn-' + tagKey);
+    if (btn) btn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function populateDropdowns() {
+  const sectorSelect = document.getElementById('sector-filter');
+  const industrySelect = document.getElementById('industry-filter');
+
+  const sectors = [...new Set(stocks.map(s => s.sector).filter(Boolean))].sort();
+  const industries = [...new Set(stocks.map(s => s.industry).filter(Boolean))].sort();
+
+  sectorSelect.innerHTML = '<option value="">All Sectors</option>';
+  sectors.forEach(sec => sectorSelect.innerHTML += `<option value="${sec}">${sec}</option>`);
+
+  industrySelect.innerHTML = '<option value="">All Industries</option>';
+  industries.forEach(ind => industrySelect.innerHTML += `<option value="${ind}">${ind}</option>`);
+}
+
+function saveFiltersToLocalStorage() {
+  try {
+    const config = {
+      sector: document.getElementById('sector-filter').value,
+      industry: document.getElementById('industry-filter').value,
+      cap: document.getElementById('cap-filter').value,
+      paramVolShocker: document.getElementById('param-vol-shocker').value,
+      paramGap: document.getElementById('param-gap').value,
+      paramPullback: document.getElementById('param-pullback').value,
+      paramAway52w: document.getElementById('param-away-52w').value,
+      paramTurnover: document.getElementById('param-turnover').value,
+      paramRsi: document.getElementById('param-rsi').value,
+      selectedRsRankType: selectedRsRankType,
+      activeScanTags: Array.from(activeScanTags)
+    };
+    localStorage.setItem('MICKKK_SCREENER_CONFIG', JSON.stringify(config));
+    alert('✓ Customize Filters configuration saved!');
+  } catch(e) {
+    console.error("Save filters error:", e);
+  }
+}
+
+function loadSavedFilters() {
+  try {
+    const saved = localStorage.getItem('MICKKK_SCREENER_CONFIG');
+    if (!saved) return;
+    const config = JSON.parse(saved);
+
+    if (config.sector) document.getElementById('sector-filter').value = config.sector;
+    if (config.industry) document.getElementById('industry-filter').value = config.industry;
+    if (config.cap) document.getElementById('cap-filter').value = config.cap;
+    if (config.paramVolShocker) document.getElementById('param-vol-shocker').value = config.paramVolShocker;
+    if (config.paramGap) document.getElementById('param-gap').value = config.paramGap;
+    if (config.paramPullback) document.getElementById('param-pullback').value = config.paramPullback;
+    if (config.paramAway52w) document.getElementById('param-away-52w').value = config.paramAway52w;
+    if (config.paramTurnover) document.getElementById('param-turnover').value = config.paramTurnover;
+    if (config.paramRsi) document.getElementById('param-rsi').value = config.paramRsi;
+    
+    if (config.selectedRsRankType) {
+      selectedRsRankType = config.selectedRsRankType;
+      const select = document.getElementById('rs-rank-type-select');
+      if (select) select.value = selectedRsRankType;
+    }
+
+    if (config.activeScanTags && Array.isArray(config.activeScanTags)) {
+      activeScanTags = new Set(config.activeScanTags);
+      document.querySelectorAll('.scan-tag-btn').forEach(btn => {
+        const onClickAttr = btn.getAttribute('onclick');
+        if (onClickAttr) {
+          const match = onClickAttr.match(/'([^']+)'/);
+          if (match && match[1] && activeScanTags.has(match[1])) {
+            btn.classList.add('active');
+          }
+        }
+      });
+    }
+  } catch(e) {
+    console.error("Load saved configs error:", e);
+  }
+}
+
+function clearSavedFilters() {
+  try {
+    localStorage.removeItem('MICKKK_SCREENER_CONFIG');
+    resetFilters();
+    alert('✓ Saved filter configurations cleared!');
+  } catch(e) {
+    console.error("Clear saved filters error:", e);
+  }
+}
+
+// TABLE DOWNLOAD/EXPORT OPTIONS
+function exportTable(format) {
+  if (!filteredStocks || filteredStocks.length === 0) {
+    alert("No stock data available to export!");
+    return;
+  }
+  const ratingMapKeys = {
+    overallRank: 'ratingOverall',
+    rankT1: 'ratingRankT1',
+    rankT2: 'ratingRankT2',
+    rankT3: 'ratingRankT3',
+    rankT4: 'ratingRankT4',
+    rankT5: 'ratingRankT5'
+  };
+
+  const headers = ["Symbol", "Name", "RS Rating (1-99)", "RS Rank #", "Market Cap (Cr)", "Category", "Sector", "Industry", "Price (INR)", "20D Turnover (Cr)", "1D %", "1W %", "15D %", "1M %", "Q %", "HY %", "1Y %", "52W High", "52W Low", "Away 52WH %", "Away 52WL %", "RSI"];
+  
+  const rows = filteredStocks.map(s => [
+    s.symbol || '',
+    (s.name || '').replace(/,/g, ' '),
+    s[ratingMapKeys[selectedRsRankType]] || '',
+    s[selectedRsRankType] || '',
+    s.mcap ? Math.round(s.mcap) : '',
+    s.category || '',
+    s.sector || '',
+    s.industry || '',
+    s.close || '',
+    s.turnover ? Number(s.turnover).toFixed(2) : '',
+    s.dailyPct ? Number(s.dailyPct).toFixed(2) : '',
+    s.weeklyPct ? Number(s.weeklyPct).toFixed(2) : '',
+    s.d15Pct ? Number(s.d15Pct).toFixed(2) : '',
+    s.monthlyPct ? Number(s.monthlyPct).toFixed(2) : '',
+    s.quarterlyPct ? Number(s.quarterlyPct).toFixed(2) : '',
+    s.halfYearlyPct ? Number(s.halfYearlyPct).toFixed(2) : '',
+    s.yearlyPct ? Number(s.yearlyPct).toFixed(2) : '',
+    s.w52High || '',
+    s.w52Low || '',
+    s.away52wHigh ? Number(s.away52wHigh).toFixed(2) : '',
+    s.away52wLow ? Number(s.away52wLow).toFixed(2) : '',
+    s.rsi ? Number(s.rsi).toFixed(1) : ''
+  ]);
+
+  if (format === 'copy') {
+    let text = headers.join('\t') + '\n' + rows.map(r => r.join('\t')).join('\n');
+    navigator.clipboard.writeText(text).then(() => alert("✓ Table data copied to clipboard!"));
+  } else if (format === 'csv') {
+    let csvContent = "data:text/csv;charset=utf-8," + headers.join(',') + '\n' + rows.map(r => r.join(',')).join('\n');
+    let encodedUri = encodeURI(csvContent);
+    let link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `MICKKK_Stock_Screener_${new Date().toISOString().slice(0,10)}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } else if (format === 'excel') {
+    let excelContent = '<table><tr><th>' + headers.join('</th><th>') + '</th></tr>';
+    rows.forEach(r => { excelContent += '<tr><td>' + r.join('</td><td>') + '</td></tr>'; });
+    excelContent += '</table>';
+    let blob = new Blob([excelContent], { type: 'application/vnd.ms-excel' });
+    let link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `MICKKK_Stock_Screener_${new Date().toISOString().slice(0,10)}.xls`;
+    link.click();
+  }
+}
+
+function setRsiPreset(min, btnEl) {
+  const isCurrentlyActive = activeScanTags.has('filterRSI') && document.getElementById('param-rsi').value == min;
+  
+  document.querySelectorAll('.rsi-preset').forEach(b => b.classList.remove('active'));
+  
+  if (isCurrentlyActive) {
+    activeScanTags.delete('filterRSI');
+    const btnRsi = document.getElementById('btn-filterRSI');
+    if (btnRsi) btnRsi.classList.remove('active');
+  } else {
+    document.getElementById('param-rsi').value = min;
+    activeScanTags.add('filterRSI');
+    btnEl.classList.add('active');
+    const btnRsi = document.getElementById('btn-filterRSI');
+    if (btnRsi) btnRsi.classList.add('active');
+  }
+  applyFilters();
+}
+
+function setTurnoverPreset(minCr, btnEl) {
+  const isCurrentlyActive = activeScanTags.has('filterTurnover') && document.getElementById('param-turnover').value == minCr;
+
+  document.querySelectorAll('.turnover-preset').forEach(b => b.classList.remove('active'));
+
+  if (isCurrentlyActive) {
+    activeScanTags.delete('filterTurnover');
+    const btnTurn = document.getElementById('btn-filterTurnover');
+    if (btnTurn) btnTurn.classList.remove('active');
+  } else {
+    document.getElementById('param-turnover').value = minCr;
+    activeScanTags.add('filterTurnover');
+    btnEl.classList.add('active');
+    const btnTurn = document.getElementById('btn-filterTurnover');
+    if (btnTurn) btnTurn.classList.add('active');
+  }
+  applyFilters();
+}
+
+function toggleScanTag(tagKey, btnEl) {
+  if (activeScanTags.has(tagKey)) {
+    activeScanTags.delete(tagKey);
+    btnEl.classList.remove('active');
+  } else {
+    activeScanTags.add(tagKey);
+    btnEl.classList.add('active');
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+  const sectorVal = document.getElementById('sector-filter').value;
+  const indVal = document.getElementById('industry-filter').value;
+  const capVal = document.getElementById('cap-filter').value;
+
+  const volShockerThresh = parseFloat(document.getElementById('param-vol-shocker').value) || 5.0;
+  const gapUpThresh = parseFloat(document.getElementById('param-gap').value) || 1.0;
+  const pullbackThresh = parseFloat(document.getElementById('param-pullback').value) || 1.5;
+  const away52wHighThresh = parseFloat(document.getElementById('param-away-52w').value);
+  const paramAwayThresh = isNaN(away52wHighThresh) ? -25 : away52wHighThresh;
+  const paramTurnoverThresh = parseFloat(document.getElementById('param-turnover').value) || 0.0;
+  const paramRsiThresh = parseFloat(document.getElementById('param-rsi').value) || 0.0;
+
+  filteredStocks = stocks.filter(s => {
+    // 1. Text Search Filter
+    const matchSearch = !searchVal || 
+      (s.name && String(s.name).toLowerCase().includes(searchVal)) || 
+      (s.symbol && String(s.symbol).toLowerCase().includes(searchVal));
+
+    // 2. Dropdown Category Filters
+    const matchSector = !sectorVal || s.sector === sectorVal;
+    const matchInd = !indVal || s.industry === indVal;
+    const matchCap = !capVal || s.category === capVal;
+    
+    // 3. Technical Scan Tags
+    let matchAllScanTags = true;
+    for (let tag of activeScanTags) {
+      const turnover = (s.turnover !== null && s.turnover !== undefined) ? Number(s.turnover) : 0;
+      const awayHigh = (s.away52wHigh !== null && s.away52wHigh !== undefined && !isNaN(s.away52wHigh)) ? Number(s.away52wHigh) : null;
+      const rsi = (s.rsi !== null && s.rsi !== undefined) ? Number(s.rsi) : 0;
+
+      if (tag === 'volShocker') {
+        if (!s.volRatio || s.volRatio < volShockerThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'isGapUp') {
+        // GAP UP FILTER LOGIC: Low price > Yesterday's High price
+        const gapPass = (s.isGapUp === true) || (s.low && s.prevHigh && s.low > s.prevHigh) || (s.gapPct && s.gapPct >= gapUpThresh);
+        if (!gapPass) { matchAllScanTags = false; break; }
+      } else if (tag === 'near10EMA') {
+        if (s.distE10 === 999 || Math.abs(s.distE10) > pullbackThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'near20EMA') {
+        if (s.distE20 === 999 || Math.abs(s.distE20) > pullbackThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'abvEMA10') {
+        if (s.distE10 === 999 || s.distE10 < 0) { matchAllScanTags = false; break; }
+      } else if (tag === 'abvEMA20') {
+        if (s.distE20 === 999 || s.distE20 < 0) { matchAllScanTags = false; break; }
+      } else if (tag === 'abvEMA50') {
+        if (s.distE50 === 999 || s.distE50 < 0) { matchAllScanTags = false; break; }
+      } else if (tag === 'abvEMA200') {
+        if (s.distE200 === 999 || s.distE200 < 0) { matchAllScanTags = false; break; }
+      } else if (tag === 'belEMA200') {
+        if (s.distE200 === 999 || s.distE200 >= 0) { matchAllScanTags = false; break; }
+      } else if (tag === 'filterAway52W') {
+        if (awayHigh === null || awayHigh < paramAwayThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'filterTurnover') {
+        if (turnover < paramTurnoverThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'filterRSI') {
+        if (rsi < paramRsiThresh) { matchAllScanTags = false; break; }
+      } else if (tag === 'isNR7') {
+        if (!s.isNR7) { matchAllScanTags = false; break; }
+      } else if (tag === 'isMIB') {
+        if (!s.isMIB) { matchAllScanTags = false; break; }
+      } else if (tag === 'vol50k') {
+        if (!s.vol50k) { matchAllScanTags = false; break; }
+      } else if (tag === 'isTrend66') {
+        if (!s.isTrend66) { matchAllScanTags = false; break; }
+      } else if (tag === 'strongCandle20') {
+        if (!s.isStrongCandle20) { matchAllScanTags = false; break; }
+      } else if (tag === 'mickkkFilter') {
+        // COMPREHENSIVE MICKKK FILTER EVALUATION WITH ALL 7 CONDITIONS:
+        // 1. (Gap Up [Low > Prev High] in 90D) OR (Vol Shocker >= 5x in 90D)
+        const cond1 = (s.gapUp1PctIn90 === true) || (s.volShockerIn90 === true) || (s.volShockerIn50 === true) || (s.isGapUp === true) || (s.volRatio >= 5.0) || (s.gapPct >= 1.0);
+        
+        // 2. Pullback close near 10 EMA or 20 EMA
+        const cond2 = (s.distE10 !== 999 && Math.abs(s.distE10) <= pullbackThresh) || 
+                      (s.distE20 !== 999 && Math.abs(s.distE20) <= pullbackThresh);
+        
+        // 3. Daily Candle Range < 3%
+        const candleRange = (s.high && s.low && s.close) ? (((s.high - s.low) / s.close) * 100) : null;
+        const cond3 = (s.comp3 === true) || (candleRange !== null && candleRange < 3.0);
+        
+        // 4. Strong GREEN Candle (Close > Open, Body >= 4%) in last 20 Days
+        const cond4 = s.isStrongCandle20 === true;
+        
+        // 5. Close >= 75% of 262D (1Y) High OR 66D (Q) High
+        const cond5 = (s.closeAtLeast75of262High === true) || (s.closeAtLeast75of66High === true) || (s.w52High && s.close && s.close >= 0.75 * s.w52High);
+        
+        // 6. Avg 30-Day Turnover Volume > 5 Crores
+        const cond6 = turnover >= 5.0;
+
+        // 7. 3-Day Tight Close < 6%
+        const cond7 = (s.tight3 === true);
+
+        if (!(cond1 && cond2 && cond3 && cond4 && cond5 && cond6 && cond7)) {
+          matchAllScanTags = false;
+          break;
+        }
+      } else if (!s[tag]) {
+        matchAllScanTags = false;
+        break;
+      }
+    }
+
+    return matchSearch && matchSector && matchInd && matchCap && matchAllScanTags;
+  });
+
+  sortData();
+  renderTable();
+}
+
+function resetFilters() {
+  document.getElementById('search-input').value = '';
+  document.getElementById('sector-filter').value = '';
+  document.getElementById('industry-filter').value = '';
+  document.getElementById('cap-filter').value = '';
+  document.getElementById('param-vol-shocker').value = '5.0';
+  document.getElementById('param-gap').value = '1.0';
+  document.getElementById('param-pullback').value = '1.5';
+  document.getElementById('param-away-52w').value = '-25';
+  document.getElementById('param-turnover').value = '5';
+  document.getElementById('param-rsi').value = '60';
+  selectedRsRankType = 'overallRank';
+  const select = document.getElementById('rs-rank-type-select');
+  if (select) select.value = 'overallRank';
+  
+  activeScanTags.clear();
+  document.querySelectorAll('.fbtn').forEach(b => b.classList.remove('active'));
+  onRsTypeChange();
+}
+
+function sortTable(col) {
+  if (currentSort.column === col) {
+    currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSort.column = col;
+    currentSort.direction = ['name', 'symbol', 'sector', 'industry', 'category'].includes(col) ? 'asc' : 'desc';
+  }
+  sortData();
+  renderTable();
+}
+
+function sortData() {
+  const col = currentSort.column;
+  const dir = currentSort.direction === 'asc' ? 1 : -1;
+
+  filteredStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+}
+
+function renderTable() {
+  const tbody = document.getElementById('table-body');
+  tbody.innerHTML = '';
+
+  document.getElementById('showing-count').textContent = filteredStocks.length;
+  document.getElementById('total-count').textContent = stocks.length;
+
+  if (filteredStocks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="24" class="c" style="color:var(--muted); padding:40px">No stocks match selected criteria. Click 'Reset' to view all stocks.</td></tr>`;
+    return;
+  }
+
+  const volShockerThresh = parseFloat(document.getElementById('param-vol-shocker').value) || 5.0;
+  const gapUpThresh = parseFloat(document.getElementById('param-gap').value) || 1.0;
+  const pullbackThresh = parseFloat(document.getElementById('param-pullback').value) || 1.5;
+
+  const ratingMapKeys = {
+    overallRank: 'ratingOverall',
+    rankT1: 'ratingRankT1',
+    rankT2: 'ratingRankT2',
+    rankT3: 'ratingRankT3',
+    rankT4: 'ratingRankT4',
+    rankT5: 'ratingRankT5'
+  };
+
+  filteredStocks.forEach(s => {
+    const tr = document.createElement('tr');
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+
+    const formattedMcap = s.mcap ? Math.round(s.mcap).toLocaleString('en-IN') : '-';
+    const formattedTurnover = (s.turnover !== null && s.turnover !== undefined) ? Number(s.turnover).toFixed(2) : '-';
+
+    let patternBadges = '';
+    if (s.volRatio && s.volRatio >= volShockerThresh) patternBadges += `<span class="pattern-badge pat-orange" title="Latest Volume is ${s.volRatio.toFixed(1)}x of 30-Day Average">🔊 Vol: ${s.volRatio.toFixed(1)}x</span>`;
+    if (s.gapPct && s.gapPct >= gapUpThresh) patternBadges += `<span class="pattern-badge pat-cyan" title="Today's Low is +${s.gapPct.toFixed(1)}% above yesterday's High">📦 Gap Up: +${s.gapPct.toFixed(1)}%</span>`;
+    if (s.volShockerIn50) patternBadges += `<span class="pattern-badge pat-orange" title="Vol >= 500% in last 50 days">🔊 Vol 50D</span>`;
+    if (s.gapUpIn50) patternBadges += `<span class="pattern-badge pat-cyan" title="Gap Up (Low > Prev High) in last 50 days">📦 Gap 50D</span>`;
+    if (s.distE10 !== 999 && Math.abs(s.distE10) <= pullbackThresh) patternBadges += `<span class="pattern-badge pat-purple" title="Close near 10 EMA (${s.distE10.toFixed(2)}%)">📈 10EMA</span>`;
+    if (s.distE20 !== 999 && Math.abs(s.distE20) <= pullbackThresh) patternBadges += `<span class="pattern-badge pat-purple" title="Close near 20 EMA (${s.distE20.toFixed(2)}%)">📈 20EMA</span>`;
+    
+    if (s.isNR7) patternBadges += `<span class="pattern-badge pat-amber" title="Narrowest Range Candle in last 7 days">📏 NR7</span>`;
+    if (s.isMIB) patternBadges += `<span class="pattern-badge pat-purple" title="Monthly Inside Bar">🌙 MIB</span>`;
+    if (s.isTrend66) patternBadges += `<span class="pattern-badge pat-green" title="Strong Uptrend (66D max-min range >= 30%)">🚀 Uptrend 30%</span>`;
+    if (s.vol50k) patternBadges += `<span class="pattern-badge pat-cyan" title="Daily volume > 50,000 shares">📊 Vol > 50k</span>`;
+
+    if (s.isIB) patternBadges += `<span class="pattern-badge pat-green" title="Inside Bar">▭ IB</span>`;
+    if (s.isDIB) patternBadges += `<span class="pattern-badge pat-green" title="Double Inside Bar">▭ DIB</span>`;
+    if (s.isWIB) patternBadges += `<span class="pattern-badge pat-purple" title="Weekly Inside Bar">💎 WIB</span>`;
+    if (s.isMCP) patternBadges += `<span class="pattern-badge pat-cyan" title="Mini Coil Pattern">🌀 MCP</span>`;
+    if (s.tight3) patternBadges += `<span class="pattern-badge pat-orange" title="3-Day Range tight (<6%)">📏 Tight 3D</span>`;
+    if (s.is3WTC) patternBadges += `<span class="pattern-badge pat-green" title="3 Weeks Tight Close">🌟 3WTC</span>`;
+    if (s.is4WTC) patternBadges += `<span class="pattern-badge pat-green" title="4 Weeks Tight Close">🌟 4WTC</span>`;
+    if (s.is5WTC) patternBadges += `<span class="pattern-badge pat-green" title="5 Weeks Tight Close">🌟 5WTC</span>`;
+    if (s.comp3) patternBadges += `<span class="pattern-badge pat-cyan" title="Daily range < 3%">⚡ Comp <3%</span>`;
+    if (s.comp4) patternBadges += `<span class="pattern-badge pat-cyan" title="Daily range < 4%">⚡ Comp <4%</span>`;
+    if (s.strongBody) patternBadges += `<span class="pattern-badge pat-green" title="Strong Green Candle Body >= 4%">🚀 Strong Candle</span>`;
+    if (s.closeAtLeast75of66High) patternBadges += `<span class="pattern-badge pat-green" title="Close >= 75% of 66D High">🛡️ Minervini 66D</span>`;
+    if (s.isMHighClose) patternBadges += `<span class="pattern-badge pat-green" title="Monthly High Close">📈 M-HighClose</span>`;
+    if (s.isQHighClose) patternBadges += `<span class="pattern-badge pat-green" title="Quarterly High Close">📈 Q-HighClose</span>`;
+    if (s.isYHighClose) patternBadges += `<span class="pattern-badge pat-green" title="Yearly High Close">📈 Y-HighClose</span>`;
+
+    const candleRange = (s.high && s.low && s.close) ? (((s.high - s.low) / s.close) * 100) : null;
+    const mickkkPass = ((s.gapUp1PctIn90 === true) || (s.volShockerIn90 === true) || (s.volRatio >= 5.0)) && 
+                      ((s.distE10 !== 999 && Math.abs(s.distE10) <= pullbackThresh) || (s.distE20 !== 999 && Math.abs(s.distE20) <= pullbackThresh)) && 
+                      ((s.comp3 === true) || (candleRange !== null && candleRange < 3.0)) && 
+                      (s.isStrongCandle20 === true) && 
+                      (s.closeAtLeast75of262High || s.closeAtLeast75of66High) && 
+                      (s.turnover && s.turnover >= 5.0) && 
+                      (s.tight3 === true);
+                      
+    if (mickkkPass) patternBadges += `<span class="pattern-badge" style="border-color:var(--accent); font-weight:bold; background:rgba(0, 212, 255, 0.12)" title="Elite composite MICKKK swing criteria passed!">🔥 MICKKK</span>`;
+
+    // Extract calculated RS Rating (1-99) and Rank number based on selected metric
+    const currentRatingVal = s[ratingMapKeys[selectedRsRankType]] || '-';
+    const currentRankNum = s[selectedRsRankType] || '-';
+
+    tr.innerHTML = `
+      <td class="sticky-col-merged">
+        <div style="display:flex; flex-direction:column; gap:1px">
+          <div style="display:flex; align-items:center; gap:8px">
+            <a href="charts.html?symbol=${encodeURIComponent(s.symbol)}" class="tv-link" title="Open in MICKKK Pro Charts">
+              ${s.symbol} <i class="fa-solid fa-chart-line" style="font-size:9.5px"></i>
+            </a>
+            <a href="${tvUrl}" target="_blank" title="Open in TradingView" style="color:var(--muted); font-size:10px; text-decoration:none">
+              <i class="fa-solid fa-arrow-up-right-from-square" style="opacity:0.6"></i>
+            </a>
+          </div>
+          <span style="font-size:10.5px; font-weight:400; color:var(--muted)" class="truncate" title="${s.name}">${s.name}</span>
+        </div>
+      </td>
+
+      <!-- RS RATING PERCENTILE BADGE CELL (1-99) -->
+      <td class="c">${getRsRatingBadge(currentRatingVal, currentRankNum)}</td>
+
+      <td class="r">${formattedMcap}</td>
+      <td><span class="badge ${s.category === 'Large Cap' ? 'purple' : s.category === 'Mid Cap' ? 'amber' : 'green'}">${s.category || '-'}</span></td>
+      
+      <!-- SECTOR / INDUSTRY CELL LEFT ALIGNED -->
+      <td class="col-sector">
+        <div style="display:flex; flex-direction:column; gap:2px; align-items:flex-start">
+          <span class="group-click-link" onclick="openGroupModal('sector', '${s.sector}')" title="Click to view all Sector stocks">${s.sector || '-'}</span>
+          <span class="group-click-link-sub" onclick="openGroupModal('industry', '${s.industry}')" title="Click to view all Industry stocks">${s.industry || '-'}</span>
+        </div>
+      </td>
+
+      <td class="r" style="color:var(--text); font-weight:600">₹${(s.close || 0).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+      <td class="r" style="color:var(--amber); font-weight:bold">${formattedTurnover}</td>
+
+      <td class="r ${s.dailyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.dailyPct)}</td>
+      <td class="r ${s.weeklyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.weeklyPct)}</td>
+      <td class="r ${s.d15Pct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.d15Pct)}</td>
+      <td class="r ${s.monthlyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.monthlyPct)}</td>
+      <td class="r ${s.quarterlyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.quarterlyPct)}</td>
+      <td class="r ${s.halfYearlyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.halfYearlyPct)}</td>
+      <td class="r ${s.yearlyPct >= 0 ? 'pnl-pos' : 'pnl-neg'}">${fmtPct(s.yearlyPct)}</td>
+
+      <td class="r" style="color:var(--muted)">${fmtPct(s.range5D)}</td>
+      <td class="r" style="color:var(--muted)">${fmtPct(s.range10D)}</td>
+      <td class="r" style="color:var(--muted)">${fmtPct(s.range20D)}</td>
+      <td class="r" style="color:var(--muted)">${fmtPct(s.range30D)}</td>
+
+      <td class="r">₹${s.w52High ? Number(s.w52High).toFixed(2) : '-'}</td>
+      <td class="r" style="color:var(--muted)">₹${s.w52Low ? Number(s.w52Low).toFixed(2) : '-'}</td>
+      <td class="r ${s.away52wHigh >= -5 ? 'pnl-pos' : ''}">${fmtPct(s.away52wHigh)}</td>
+      <td class="r" style="color:var(--muted)">${fmtPct(s.away52wLow)}</td>
+      <td class="c">${getRsiBadge(s.rsi)}</td>
+
+      <td style="font-size:10px">${patternBadges || '<span style="color:var(--muted)">No patterns detected</span>'}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function openGroupModal(type, groupName) {
+  if (!groupName) return;
+  const nameLower = groupName.toLowerCase().trim();
+  
+  activeModalStocks = stocks.filter(s => {
+    const val = type === 'sector' ? s.sector : s.industry;
+    return (val || '').toLowerCase().trim() === nameLower;
+  });
+
+  document.getElementById('modal-group-title').textContent = `${type.toUpperCase()}: ${groupName.toUpperCase()} (${activeModalStocks.length} STOCKS)`;
+  modalSort = { column: 'overallRank', direction: 'asc' };
+  
+  sortAndRenderModal();
+  document.getElementById('stocks-modal').classList.add('open');
+}
+
+function sortModalTable(colKey) {
+  if (modalSort.column === colKey) {
+    modalSort.direction = modalSort.direction === 'asc' ? 'desc' : 'asc';
+  } else {
+    modalSort.column = colKey;
+    modalSort.direction = colKey.includes('rank') || colKey.includes('Rank') || colKey === 'overallRank' ? 'asc' : 'desc';
+  }
+  sortAndRenderModal();
+}
+
+function sortAndRenderModal() {
+  const col = modalSort.column;
+  const dir = modalSort.direction === 'asc' ? 1 : -1;
+
+  activeModalStocks.sort((a, b) => {
+    let valA = a[col] ?? (dir === 1 ? Infinity : -Infinity);
+    let valB = b[col] ?? (dir === 1 ? Infinity : -Infinity);
+
+    if (typeof valA === 'string') return valA.localeCompare(valB) * dir;
+    return (valA - valB) * dir;
+  });
+
+  const tbody = document.getElementById('modal-stocks-body');
+  tbody.innerHTML = activeModalStocks.map(s => {
+    const tvUrl = `https://in.tradingview.com/chart/?symbol=NSE:${encodeURIComponent(s.symbol)}`;
+    return `
+      <tr>
+        <td style="padding:6px">
+          <div style="display:flex; align-items:center; gap:6px">
+            <a href="charts.html?symbol=${encodeURIComponent(s.symbol)}" class="tv-link">${s.symbol} <i class="fa-solid fa-chart-line" style="font-size:9.5px"></i></a>
+            <a href="${tvUrl}" target="_blank" style="color:var(--muted); font-size:10px; text-decoration:none"><i class="fa-solid fa-arrow-up-right-from-square" style="opacity:0.6"></i></a>
+          </div>
+        </td>
+        <td style="padding:6px; color:var(--text)" class="truncate" title="${s.name}">${s.name}</td>
+        
+        <td class="c" style="padding:6px">${s.rankT1 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT2 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT3 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT4 || '-'}</td>
+        <td class="c" style="padding:6px">${s.rankT5 || '-'}</td>
+        
+        <td class="c" style="padding:6px">${getRsRatingBadge(s.ratingOverall, s.overallRank)}</td>
+
+        <td class="r" style="padding:6px">${s.mcap ? Math.round(s.mcap).toLocaleString('en-IN') : '-'}</td>
+        <td class="r" style="padding:6px">₹${(s.close || 0).toFixed(2)}</td>
+        <td class="r" style="padding:6px; color:var(--amber)">${s.turnover ? Number(s.turnover).toFixed(2) : '-'}</td>
+        <td class="c" style="padding:6px">${s.rsi ? Number(s.rsi).toFixed(1) : '-'}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+function closeModal() {
+  document.getElementById('stocks-modal').classList.remove('open');
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return (v >= 0 ? '+' : '') + Number(v).toFixed(2) + '%';
+}
+
+function getRsiBadge(rsi) {
+  if (!rsi) return '—';
+  let badgeClass = 'badge';
+  if (rsi >= 60) badgeClass += ' green';
+  else if (rsi <= 40) badgeClass += ' red';
+  else badgeClass += ' amber';
+  return `<span class="${badgeClass}">${Number(rsi).toFixed(1)}</span>`;
+}
+</script>
+</body>
+</html>
