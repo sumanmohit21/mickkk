@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MICKKK.com — Market Breadth</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{--bg:#080b0f;--surface:#0e1318;--card:#131a22;--card2:#18212c;--border:#1e2d3d;--text:#d4e4f0;--muted:#5a7a94;--accent:#00d4ff;--green:#00e676;--red:#ff3d5a;--amber:#ffab00;--purple:#a78bfa;--font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;--radius:10px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--font);min-height:100vh;}
+::-webkit-scrollbar{width:5px;height:5px;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(8,11,15,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 32px;height:56px;}
+.logo{font-size:20px;font-weight:700;letter-spacing:3px;color:var(--accent);font-family:var(--mono);}
+.logo .dotcom{color:var(--text);}
+.nav-links{display:flex;gap:4px;}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:500;padding:6px 14px;border-radius:6px;transition:all 0.2s;}
+.nav-links a:hover,.nav-links a.active{color:var(--accent);background:rgba(0,212,255,0.08);}
+
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:12px;}
+.page-title{font-size:22px;font-weight:700;}
+.page-sub{color:var(--muted);font-size:13px;margin-top:2px;}
+.fbtn{background:var(--card);border:1px solid var(--border);color:var(--muted);padding:8px 14px;border-radius:var(--radius);font-size:12px;cursor:pointer;font-family:var(--font);transition:all 0.2s;white-space:nowrap;}
+.fbtn.active{border-color:var(--accent);color:var(--accent);background:rgba(0,212,255,0.08);}
+.fbtn:hover{color:var(--text);border-color:var(--accent);}
+
+/* TOP DASHBOARD MATCHING SCREENSHOT */
+.top-kpi-row1{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:12px;}
+.kpi-mini{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 12px;}
+.kpi-mini-title{font-size:9.5px;color:var(--muted);text-transform:uppercase;font-weight:600;letter-spacing:0.5px;display:flex;align-items:center;gap:4px;}
+.kpi-mini-val{font-size:18px;font-weight:700;margin-top:4px;font-family:var(--mono);}
+
+.top-kpi-row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
+.kpi-card-colored{border-radius:10px;padding:16px;color:#fff;position:relative;overflow:hidden;}
+.kpi-card-colored.cyan{background:linear-gradient(135deg, #0ea5e9, #0284c7);}
+.kpi-card-colored.green{background:linear-gradient(135deg, #10b981, #059669);}
+.kpi-card-colored.purple{background:linear-gradient(135deg, #8b5cf6, #7c3aed);}
+.kpi-card-colored.gold{background:linear-gradient(135deg, #d97706, #b45309);}
+.kpi-card-colored.crimson{background:linear-gradient(135deg, #be123c, #9f1239);}
+.kpi-card-title{font-size:10px;text-transform:uppercase;font-weight:700;letter-spacing:0.6px;opacity:0.9;}
+.kpi-card-val{font-size:26px;font-weight:800;margin-top:6px;font-family:var(--mono);}
+
+/* CHART GRID LAYOUT */
+.charts-grid{display:grid;grid-template-columns:repeat(2, 1fr);gap:16px;margin-bottom:20px;}
+.charts-grid.full-width{grid-template-columns:1fr;}
+@media(max-width:960px){.charts-grid{grid-template-columns:1fr;}}
+
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-bottom:0;}
+.panel-flush{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;padding:0;margin-bottom:16px;}
+.ptitle{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.ptitle::before{content:'';width:3px;height:12px;background:var(--accent);border-radius:2px;flex-shrink:0;}
+.chart-wrap-lg{height:280px;position:relative;}
+.section-hdr{font-size:11px;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:1px;padding:10px 16px;}
+.section-hdr.blue{background:#12294a;color:var(--accent);}
+.loading{display:flex;align-items:center;justify-content:center;gap:10px;padding:60px;color:var(--muted);font-size:13px;}
+.spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+.empty{text-align:center;padding:30px;color:var(--muted);font-size:13px;}
+
+.badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.badge.bullish{background:rgba(0,230,118,0.2);color:var(--green);}
+.badge.bearish{background:rgba(255,61,90,0.2);color:var(--red);}
+.badge.neutral{background:rgba(90,122,148,0.2);color:var(--muted);}
+.badge.warning{background:rgba(255,171,0,0.2);color:var(--amber);}
+
+.date-filter{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.date-filter input[type=date], .date-filter select{background:var(--card);border:1px solid var(--border);color:var(--text);padding:7px 12px;border-radius:var(--radius);font-size:12px;font-family:var(--font);outline:none;}
+.date-filter input[type=date]:focus, .date-filter select:focus{border-color:var(--accent);}
+.date-filter label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;}
+
+.mb-table-wrap{overflow-x:auto;max-height:640px;overflow-y:auto;}
+.mb-table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap;}
+.mb-table thead th{position:sticky;top:0;background:var(--card2);font-size:9.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;padding:9px 10px;text-align:right;border-bottom:1px solid var(--border);z-index:2;cursor:pointer;}
+.mb-table thead th:first-child{text-align:left;position:sticky;left:0;z-index:3;}
+.mb-table tbody td{padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-family:var(--mono);position:relative;}
+.mb-table tbody td:first-child{text-align:left;font-family:var(--font);color:var(--text);position:sticky;left:0;background:var(--card);z-index:1;}
+.mb-table tbody tr:nth-child(even) td:first-child{background:var(--card2);}
+.mb-table tbody tr:nth-child(even){background:rgba(255,255,255,0.015);}
+.mb-table tbody tr:hover td{filter:brightness(1.25);}
+.mb-table tbody tr:last-child td{border-bottom:none;}
+.mb-table tbody td span{position:relative;z-index:1;}
+.databar{position:absolute;left:2px;top:3px;bottom:3px;border-radius:3px;z-index:0;opacity:0.55;}
+
+.col-divergence{min-width:160px;max-width:210px;white-space:normal !important;line-height:1.2;text-align:left !important;font-size:11px;}
+
+.desc-table-wrap{overflow-x:auto;margin-top:10px;}
+.desc-table{width:100%;border-collapse:collapse;font-size:12.5px;text-align:left;}
+.desc-table th{background:var(--card2);color:var(--accent);padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:0.5px;}
+.desc-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;line-height:1.5;}
+.desc-table tr:hover td{background:rgba(255,255,255,0.02);}
+.desc-table code{background:rgba(0,0,0,0.4);color:var(--amber);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px;}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">MICKKK<span class="dotcom">.com</span></div>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="journal.html">Trading Journal</a>
+    <a href="market-breadth.html" class="active">Market Breadth</a>
+  </div>
+</nav>
+
+<div style="max-width:100%;margin:0 auto;padding:76px 24px 60px;">
+  <div class="page-header">
+    <div>
+      <div class="page-title">📡 Market Breadth Dashboard</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:1px">Powered by Google Finance & Chartink</div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="fbtn" onclick="loadMB()">🔄 Refresh</button>
+    </div>
+  </div>
+
+  <!-- TOP LIVE DASHBOARD -->
+  <div id="top-kpi-container"></div>
+
+  <div id="mb-content">
+    <div class="loading"><div class="spinner"></div>Loading Market Breadth data from Google Sheet…</div>
+  </div>
+
+  <!-- EXPLANATION TABLE AT BOTTOM -->
+  <div class="panel" style="margin-top:24px">
+    <div class="ptitle">ℹ️ Criteria & Metric Explanations</div>
+    <div class="desc-table-wrap">
+      <table class="desc-table">
+        <thead>
+          <tr>
+            <th style="width:20%;">Metric Name</th>
+            <th style="width:30%;">Formula / Threshold</th>
+            <th>Description & Practical Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>TOTAL UNIVERSE</b></td>
+            <td><code>Active Traded Count</code></td>
+            <td>Total active NSE stocks processed on the trading day.</td>
+          </tr>
+          <tr>
+            <td><b>Index % Changes</b></td>
+            <td><code>Nifty 50, Nifty 500, CNX Smallcap, MidSmall 400</code></td>
+            <td>Daily percentage performance of broad market indices.</td>
+          </tr>
+          <tr>
+            <td><b>Up 4%+ / Dn 4%+</b></td>
+            <td><code>Daily Change % ≥ +4% / ≤ -4%</code></td>
+            <td>Percentage of stocks showing strong daily bullish/bearish momentum.</td>
+          </tr>
+          <tr>
+            <td><b>Net Breadth</b></td>
+            <td><code>(Up 4%+) − (Dn 4%+)</code></td>
+            <td>Measures short-term net buying vs selling pressure. Positive (Green) = Buyers dominant.</td>
+          </tr>
+          <tr>
+            <td><b>Volume Ratio</b></td>
+            <td><code>Above Avg Vol / Below Avg Vol</code></td>
+            <td>
+              • <b>Above Avg Vol</b>: <code>Volume > 1.5x 20 DMA</code><br>
+              • <b>Below Avg Vol</b>: <code>Volume < 0.5x 20 DMA</code><br>
+              Ratio <code>> 1.0</code> shows institutional participation. <code>> 2.0</code> reflects heavy momentum.
+            </td>
+          </tr>
+          <tr>
+            <td><b>5-Day Momentum</b></td>
+            <td><code>+15% 5D / -15% 5D</code></td>
+            <td>Percentage of stocks up <code>≥ +15%</code> (Leaders) or down <code>≤ -15%</code> (Losers) in 5 sessions.</td>
+          </tr>
+          <tr>
+            <td><b>New 52 WH / 52 WL</b></td>
+            <td><code>Close ≥ 52W High / Close ≤ 52W Low</code></td>
+            <td>Percentage of stocks reaching new 52-week highs or lows.</td>
+          </tr>
+          <tr>
+            <td><b>Net NH-NL</b></td>
+            <td><code>(New 52WH %) − (New 52WL %)</code></td>
+            <td>Broad structural market trend strength. Positive (Green) = Healthy structural bull phase.</td>
+          </tr>
+          <tr>
+            <td><b>Within 15% from 52WH</b></td>
+            <td><code>Close ≥ 85% of 52-Week High</code></td>
+            <td>Percentage of stocks trading near multi-month highs. <code>> 50%</code> confirms strong bull market.</td>
+          </tr>
+          <tr>
+            <td><b>% Above EMAs</b></td>
+            <td><code>Close ≥ 10 / 20 / 50 / 200 EMA</code></td>
+            <td>Moving average participation. <code>> 80%</code> Overbought zone, <code>< 20%</code> Oversold zone.</td>
+          </tr>
+          <tr>
+            <td><b>Signal-MBI</b></td>
+            <td><code>Sum of 6 ratio boxes (-6 to +6)</code></td>
+            <td>Composite market score. <code>≥ +3</code> Solid Bullish, <code>≤ -3</code> Bearish, in-between Neutral.</td>
+          </tr>
+          <tr>
+            <td><b>MBI Trend & Divergence</b></td>
+            <td><code>10-Day Shift & Index vs Breadth</code></td>
+            <td>Tracks MBI trajectory over 10 days and alerts when Index and Breadth diverge.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<footer style="background:var(--bg);border-top:1px solid var(--border);padding:24px 32px;text-align:center;color:var(--muted);font-size:12px;font-family:var(--mono);"><span style="color:var(--accent)">MICKKK.com</span> · Trade Smarter. Track Everything. · Created by Mohit Suman</footer>
+
+<script>
+const MB_API_URL = 'https://script.google.com/macros/s/AKfycbwezdWhMLdjX8HSgcTD9x9oI24pWakdc47At5jlBXMq3rtnLoo4ipCdd3XSpIQkXFfFDw/exec';
+
+let mbCharts = [];
+let mbAllRows = [];
+let chartRangeDays = 90;
+let tableSortIdx = 0;      
+let tableSortDir = 'desc'; 
+let showRatioCols = false; 
+let isFullWidthLayout = false;
+let selectedIndexOverlay = 'none';
+let showXAxisDates = false; // Controls both X-Axis and Hover Crosshair Line
+
+// Helper: Convert YYYY-MM-DD to DD-MM-YY
+function formatDateDDMMYY(str) {
+  if (!str) return '';
+  const m = String(str).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (m) {
+    const yy = m[1].slice(2);
+    return `${m[3]}-${m[2]}-${yy}`; // e.g. 21-08-26
+  }
+  return str;
+}
+
+// --- CUSTOM PLUGIN: VERTICAL HOVER DOTTED LINE + DD-MM-YY HIGHLIGHTED DATE BADGE ---
+// Runs ONLY when showXAxisDates is TRUE
+const verticalHoverLinePlugin = {
+  id: 'verticalHoverLine',
+  afterDraw: (chart) => {
+    // ONLY show line and badge when Show X-Axis Dates button is ACTIVE
+    if (!showXAxisDates) return;
+
+    if (chart.tooltip?._active && chart.tooltip._active.length) {
+      const activePoint = chart.tooltip._active[0];
+      const ctx = chart.ctx;
+      const x = activePoint.element.x;
+      const topY = chart.scales.y ? chart.scales.y.top : chart.chartArea.top;
+      const bottomY = chart.scales.y ? chart.scales.y.bottom : chart.chartArea.bottom;
+
+      ctx.save();
+      
+      // Draw Vertical Dotted Line
+      ctx.beginPath();
+      ctx.setLineDash([3, 3]);
+      ctx.moveTo(x, topY);
+      ctx.lineTo(x, bottomY);
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(0, 212, 255, 0.85)'; // Accent Cyan Line
+      ctx.stroke();
+
+      // Highlight Date on X-Axis in DD-MM-YY Format
+      const dataIndex = activePoint.index;
+      const rawLabel = chart.data.labels[dataIndex];
+      const formattedDate = formatDateDDMMYY(rawLabel);
+
+      if (formattedDate) {
+        ctx.font = '10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+
+        const textWidth = ctx.measureText(formattedDate).width;
+        const padX = 6;
+        const boxHeight = 16;
+        const boxWidth = textWidth + padX * 2;
+        const boxX = x - boxWidth / 2;
+        const boxY = bottomY + 4;
+
+        // Draw Date Badge Background
+        ctx.fillStyle = '#00d4ff';
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 4);
+          ctx.fill();
+        } else {
+          ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+        }
+
+        // Draw Date Text inside Badge
+        ctx.fillStyle = '#080b0f';
+        ctx.fillText(formattedDate, x, boxY + 2);
+      }
+
+      ctx.restore();
+    }
+  }
+};
+
+// Register plugin globally
+Chart.register(verticalHoverLinePlugin);
+
+function visibleCols(){
+  return COLS.filter(c => !c.hideByDefault || showRatioCols);
+}
+
+function toggleRatioCols(btn){
+  showRatioCols = !showRatioCols;
+  btn.textContent = showRatioCols ? '🙈 Hide Ratio Columns (4R/20R/50R/200R)' : '👁 Show Ratio Columns (4R/20R/50R/200R)';
+  renderTableHeaderAndBody();
+}
+
+function setLayoutView(fullWidth, btn){
+  isFullWidthLayout = fullWidth;
+  const grid = document.querySelector('.charts-grid');
+  if(grid){
+    grid.classList.toggle('full-width', isFullWidthLayout);
+  }
+  if(btn){
+    btn.parentElement.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+function changeIndexOverlay(val){
+  selectedIndexOverlay = val;
+  buildCharts();
+}
+
+function toggleXAxisDates(btn){
+  showXAxisDates = !showXAxisDates;
+  if(btn){
+    btn.classList.toggle('active', showXAxisDates);
+  }
+  buildCharts();
+}
+
+// Table Column Definitions
+const COLS = [
+  {key:'date',           label:'DATE',                     type:'text', desc:'Trading day'},
+  {key:'niftyChg',       label:'NIFTY 50 %Chg',            type:'pctx100', lo:-2, hi:2, desc:'Nifty 50 daily % change'},
+  {key:'smallcapChg',    label:'Nifty500 %Chg',            type:'pctx100', lo:-2, hi:2, desc:'Nifty 500 daily % change'},
+  {key:'cnxSmallcapChg', label:'CNXSMALLCAP %Chg',         type:'pctx100', lo:-2, hi:2, desc:'CNX Smallcap daily % change'},
+  {key:'midsmall400Chg', label:'NIFTYMIDSMALLCAP400 %Chg', type:'pctx100', lo:-2, hi:2, desc:'Nifty MidSmallcap 400 daily % change'},
+  {key:'totalUniverse',  label:'TOTAL UNIVERSE',           type:'integer', desc:'Total active stocks counted'},
+  {key:'up4',            label:'Up 4%+',                   type:'pctDirect', lo:0,  hi:25, desc:'% of total stocks up 4%+ today'},
+  {key:'dn4',            label:'Dn 4%+',                   type:'pctDirect', lo:0,  hi:25, invert:true, desc:'% of total stocks down 4%+ today'},
+  {key:'netBreadth',     label:'Net Breadth',              type:'num',       lo:-25, hi:25, desc:'Net Breadth = (Up 4%+) - (Dn 4%+)'},
+  {key:'volumeRatio',    label:'Volume Ratio',             type:'num',       lo:0.3, hi:3.0, desc:'Above-Avg Volume Stocks / Below-Avg Volume Stocks'},
+  {key:'plus15',         label:'+15% 5D',                  type:'pctDirect', lo:0,  hi:15, desc:'% of total stocks up 15%+ in 5 days'},
+  {key:'minus15',        label:'-15% 5D',                  type:'pctDirect', lo:0,  hi:15, invert:true, desc:'% of total stocks down 15%+ in 5 days'},
+  {key:'newHigh',        label:'New 52 WH',                type:'pctDirect', lo:0,  hi:10, desc:'% of total stocks making new 52WH'},
+  {key:'newLow',         label:'New 52 WL',                type:'pctDirect', lo:0,  hi:10, invert:true, desc:'% of total stocks making new 52WL'},
+  {key:'netNhNl',        label:'Net NH-NL',                type:'num',       lo:-15, hi:15, desc:'Net NH-NL = (New 52WH %) - (New 52WL %)'},
+  {key:'within15',       label:'% within15of52WH',         type:'pctDirect', lo:0,  hi:80, desc:'% of stocks within 15% of 52WH'},
+  {key:'abv10',          label:'%10EMA',                   type:'pctDirect', lo:20, hi:80, desc:'% of stocks above 10 EMA'},
+  {key:'abv20',          label:'%20EMA',                   type:'pctDirect', lo:20, hi:80, desc:'% of stocks above 20 EMA'},
+  {key:'abv50',          label:'%50EMA',                   type:'pctDirect', lo:20, hi:80, desc:'% of stocks above 50 EMA'},
+  {key:'abv200',         label:'%200EMA',                  type:'pctDirect', lo:20, hi:80, desc:'% of stocks above 200 EMA'},
+  {key:'r4',             label:'4R',                       type:'num', lo:50, hi:200, hideByDefault:true, simple:true},
+  {key:'r4chg',          label:'4R %Chg',                  type:'num', lo:-30, hi:30, hideByDefault:true, simple:true},
+  {key:'r20',            label:'20R',                      type:'num', lo:50, hi:200, hideByDefault:true, simple:true},
+  {key:'r20chg',         label:'20R %Chg',                 type:'num', lo:-30, hi:30, hideByDefault:true, simple:true},
+  {key:'r50',            label:'50R',                      type:'num', lo:50, hi:200, hideByDefault:true, simple:true},
+  {key:'r50chg',         label:'50R %Chg',                 type:'num', lo:-30, hi:30, hideByDefault:true, simple:true},
+  {key:'r200',           label:'200R',                     type:'num', lo:50, hi:200, hideByDefault:true, simple:true},
+  {key:'r200chg',        label:'200R %Chg',                type:'num', lo:-30, hi:30, hideByDefault:true, simple:true},
+  {key:'signalMbi',      label:'Signal-MBI',               type:'num', lo:-6, hi:6},
+  {key:'label',          label:'Signal Label',             type:'badge'},
+  {key:'trend',          label:'MBI Trend',                type:'text'},
+  {key:'divergence',     label:'Divergence',               type:'divergence'}
+];
+
+function badgeClass(label){
+  if(!label) return 'neutral';
+  const l = label.toLowerCase();
+  if(l.includes('warning')) return 'warning';
+  if(l.includes('bullish')) return 'bullish';
+  if(l.includes('bearish')) return 'bearish';
+  return 'neutral';
+}
+
+function heatColor(val, lo, hi, invert){
+  if(val===null || val===undefined || isNaN(val)) return null;
+  let t = (val - lo) / (hi - lo);
+  t = Math.max(0, Math.min(1, t));
+  if(invert) t = 1 - t;
+  const hue = t*120;
+  return {t, css:`hsl(${hue},78%,48%)`};
+}
+
+function renderCell(col, val){
+  if(col.type==='text') return `<td>${val ?? '—'}</td>`;
+  if(col.type==='badge') return `<td><span class="badge ${badgeClass(val)}">${val||'—'}</span></td>`;
+  if(col.type==='integer') return `<td class="r" style="color:var(--text);font-weight:600">${val ? val.toLocaleString() : '—'}</td>`;
+  
+  if(col.type==='divergence'){
+    const isDiv = val && val.indexOf('Divergence (') !== -1;
+    const dispVal = val ? val.replace(' (', '<br><span style="font-size:9.5px;opacity:0.85">(') : '—';
+    return `<td class="col-divergence" style="${isDiv?'color:var(--amber);font-weight:600':'color:var(--muted)'}">${dispVal}</td>`;
+  }
+
+  // Index % Changes
+  if(col.key==='niftyChg' || col.key==='smallcapChg' || col.key==='cnxSmallcapChg' || col.key==='midsmall400Chg'){
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    const num = val * 100;
+    const disp = (num >= 0 ? '+' : '') + num.toFixed(2) + '%';
+    const bg = num >= 0 ? 'rgba(0, 230, 118, 0.18)' : 'rgba(255, 61, 90, 0.18)';
+    const fg = num >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<td class="r" style="background:${bg};color:${fg};font-weight:600">${disp}</td>`;
+  }
+
+  // Net NH-NL
+  if(col.key==='netNhNl'){
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    const disp = val.toFixed(2);
+    const bg = val >= 0 ? 'rgba(0, 230, 118, 0.22)' : 'rgba(255, 61, 90, 0.22)';
+    const fg = val >= 0 ? 'var(--green)' : 'var(--red)';
+    return `<td class="r" style="background:${bg};color:${fg};font-weight:600">${disp}</td>`;
+  }
+
+  let numVal = val, disp;
+  if(col.type==='pctDirect'){
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    numVal = val;
+    disp = val.toFixed(1) + '%';
+  } else if(col.type==='pctx100'){
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    numVal = val*100;
+    disp = numVal.toFixed(2)+'%';
+  } else {
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    numVal = val;
+    disp = Number.isInteger(val) ? val : val.toFixed(2);
+  }
+
+  if(col.simple) return `<td class="r">${disp}</td>`;
+
+  // SOLID COLORS FOR SIGNAL MBI
+  if(col.key === 'signalMbi'){
+    if(val===null||val===undefined) return `<td class="r">—</td>`;
+    let bg = 'rgba(255,255,255,0.08)', fg = 'var(--text)';
+    if(numVal >= 3) { bg = 'rgba(0, 230, 118, 0.3)'; fg = 'var(--green)'; }
+    else if(numVal <= -3) { bg = 'rgba(255, 61, 90, 0.3)'; fg = 'var(--red)'; }
+    else { bg = 'rgba(255, 255, 255, 0.12)'; fg = '#ffffff'; }
+    return `<td class="r" style="background:${bg};color:${fg};font-weight:700">${disp}</td>`;
+  }
+
+  const h = heatColor(numVal, col.lo, col.hi, col.invert);
+  if(!h) return `<td class="r">${disp}</td>`;
+
+  const barWidth = Math.max(4, h.t*100);
+  return `<td class="r" style="position:relative">
+    <div class="databar" style="width:${barWidth}%;background:${h.css}"></div>
+    <span>${disp}</span>
+  </td>`;
+}
+
+async function loadMB(){
+  const el = document.getElementById('mb-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>Loading Market Breadth data from Google Sheet…</div>';
+  try{
+    const res = await fetch(`${MB_API_URL}?action=getMB`);
+    const data = await res.json();
+    if(data.error){ el.innerHTML = `<div class="loading" style="color:var(--red)">Error: ${data.error}</div>`; return; }
+    mbAllRows = data.rows || [];
+    renderTopKPIs();
+    renderMB();
+  }catch(e){
+    console.error('loadMB error:', e);
+    el.innerHTML = `<div class="loading" style="color:var(--red)">Google Sheet connection failed — ${e.message}</div>`;
+  }
+}
+
+// RENDER TOP DASHBOARD
+function renderTopKPIs(){
+  if(!mbAllRows.length) return;
+  const latest = mbAllRows[mbAllRows.length - 1];
+  const container = document.getElementById('top-kpi-container');
+  
+  const niftyStr = latest.niftyChg !== null ? ((latest.niftyChg>=0?'+':'')+(latest.niftyChg*100).toFixed(2)+'%') : '—';
+  const niftyColor = latest.niftyChg >= 0 ? 'var(--green)' : 'var(--red)';
+  
+  const nifty500Str = latest.smallcapChg !== null ? ((latest.smallcapChg>=0?'+':'')+(latest.smallcapChg*100).toFixed(2)+'%') : '—';
+  const nifty500Color = latest.smallcapChg >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const netBreadthStr = latest.netBreadth !== null ? ((latest.netBreadth>=0?'+':'')+latest.netBreadth.toFixed(2)) : '—';
+  const netBreadthColor = (latest.netBreadth||0) >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const netNhNlStr = latest.netNhNl !== null ? ((latest.netNhNl>=0?'+':'')+latest.netNhNl.toFixed(2)) : '—';
+  const netNhNlColor = (latest.netNhNl||0) >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const mbiScore = latest.signalMbi ?? '—';
+  const mbiLabel = latest.label || 'Neutral';
+  let mbiColor = 'var(--text)';
+  if(mbiScore >= 3) mbiColor = 'var(--green)';
+  else if(mbiScore <= -3) mbiColor = 'var(--red)';
+
+  container.innerHTML = `
+    <!-- ROW 1: MINI KPI CARDS -->
+    <div class="top-kpi-row1">
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">📅 LATEST DATE</div>
+        <div class="kpi-mini-val">${latest.date}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">🎯 SIGNAL LABEL</div>
+        <div class="kpi-mini-val" style="font-size:14px;margin-top:6px;"><span class="badge ${badgeClass(mbiLabel)}">${mbiLabel}</span></div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">⚖️ SIGNAL-MBI</div>
+        <div class="kpi-mini-val" style="color:${mbiColor}">${mbiScore}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">📈 NIFTY %CHG</div>
+        <div class="kpi-mini-val" style="color:${niftyColor}">${niftyStr}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">📊 NIFTY 500 %CHG</div>
+        <div class="kpi-mini-val" style="color:${nifty500Color}">${nifty500Str}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">🔀 NET BREADTH</div>
+        <div class="kpi-mini-val" style="color:${netBreadthColor}">${netBreadthStr}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">🆕 NET NH-NL</div>
+        <div class="kpi-mini-val" style="color:${netNhNlColor}">${netNhNlStr}</div>
+      </div>
+      <div class="kpi-mini">
+        <div class="kpi-mini-title">🔊 VOL RATIO</div>
+        <div class="kpi-mini-val" style="color:var(--accent)">${latest.volumeRatio?.toFixed(2) || '—'}</div>
+      </div>
+    </div>
+
+    <!-- ROW 2: BIG COLORED EMA CARDS -->
+    <div class="top-kpi-row2">
+      <div class="kpi-card-colored cyan">
+        <div class="kpi-card-title">% ABOVE 10 EMA</div>
+        <div class="kpi-card-val">${latest.abv10 ? latest.abv10.toFixed(1)+'%' : '—'}</div>
+      </div>
+      <div class="kpi-card-colored green">
+        <div class="kpi-card-title">% ABOVE 20 EMA</div>
+        <div class="kpi-card-val">${latest.abv20 ? latest.abv20.toFixed(1)+'%' : '—'}</div>
+      </div>
+      <div class="kpi-card-colored purple">
+        <div class="kpi-card-title">% ABOVE 50 EMA</div>
+        <div class="kpi-card-val">${latest.abv50 ? latest.abv50.toFixed(1)+'%' : '—'}</div>
+      </div>
+      <div class="kpi-card-colored gold">
+        <div class="kpi-card-title">% ABOVE 200 EMA</div>
+        <div class="kpi-card-val">${latest.abv200 ? latest.abv200.toFixed(1)+'%' : '—'}</div>
+      </div>
+      <div class="kpi-card-colored crimson">
+        <div class="kpi-card-title">% WITHIN 15% OF 52WH</div>
+        <div class="kpi-card-val">${latest.within15 ? latest.within15.toFixed(1)+'%' : '—'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderMB(){
+  mbCharts.forEach(c=>c.destroy()); mbCharts=[];
+  const el = document.getElementById('mb-content');
+  const rows = mbAllRows;
+
+  if(!rows.length){
+    el.innerHTML = '<div class="loading">No Market Breadth data available.</div>';
+    return;
+  }
+
+  const firstDate = rows[0].date, lastDate = rows[rows.length-1].date;
+  const defaultFrom = rows.length > 90 ? rows[rows.length-90].date : firstDate;
+
+  el.innerHTML = `
+  <div class="date-filter">
+    <label>From</label><input type="date" id="mb-from" min="${firstDate}" max="${lastDate}" value="${defaultFrom}" onchange="applyDateFilter()">
+    <label>To</label><input type="date" id="mb-to" min="${firstDate}" max="${lastDate}" value="${lastDate}" onchange="applyDateFilter()">
+    <button class="fbtn" onclick="setDateRange(7)">Last 7D</button>
+    <button class="fbtn" onclick="setDateRange(30)">Last 30D</button>
+    <button class="fbtn" onclick="setDateRange(90)">Last 90D</button>
+    <button class="fbtn" onclick="setDateRange('all')">Full History</button>
+    <button class="fbtn" onclick="exportTableCSV()">⬇ Export CSV</button>
+    <button class="fbtn" onclick="toggleRatioCols(this)">👁 Show Ratio Columns (4R/20R/50R/200R)</button>
+    <span id="mb-range-count" style="color:var(--muted);font-size:11.5px;margin-left:4px"></span>
+  </div>
+
+  <div class="panel-flush">
+    <div class="section-hdr blue">Breadth Data — Selected Date Range</div>
+    <div class="mb-table-wrap">
+      <table class="mb-table">
+        <thead><tr>${visibleCols().map(c=>{const i=COLS.indexOf(c);return `<th title="${c.desc||''}" onclick="setTableSort(${i})">${c.label}${tableSortIdx===i?(tableSortDir==='asc'?' ↑':' ↓'):''}</th>`;}).join('')}</tr></thead>
+        <tbody id="mb-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CHARTS CONTROLS -->
+  <div class="date-filter" style="margin-top:24px;justify-content:space-between;background:var(--card);padding:12px 16px;border-radius:12px;border:1px solid var(--border);">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <label>Timeframe</label>
+      <button class="fbtn" onclick="setChartRange(30,this)">30D</button>
+      <button class="fbtn active" onclick="setChartRange(90,this)">90D</button>
+      <button class="fbtn" onclick="setChartRange(180,this)">180D</button>
+      <button class="fbtn" onclick="setChartRange(365,this)">1Y</button>
+      <button class="fbtn" onclick="setChartRange('all',this)">All</button>
+    </div>
+
+    <div style="display:flex;gap:12px;align-items:center;">
+      <button class="fbtn ${showXAxisDates?'active':''}" onclick="toggleXAxisDates(this)">📅 Show X-Axis Dates</button>
+
+      <div style="display:flex;gap:4px;align-items:center;">
+        <label>Layout</label>
+        <button class="fbtn active" onclick="setLayoutView(false,this)">📊 2 Columns</button>
+        <button class="fbtn" onclick="setLayoutView(true,this)">🖥️ Full Width</button>
+      </div>
+
+      <div style="display:flex;gap:6px;align-items:center;">
+        <label>Compare Index</label>
+        <select onchange="changeIndexOverlay(this.value)">
+          <option value="none">None</option>
+          <option value="nifty">Nifty 50</option>
+          <option value="nifty500">Nifty 500</option>
+          <option value="smallcap">CNX Smallcap</option>
+          <option value="midsmall400">Nifty MidSmall 400</option>
+          <option value="all">⚡ All 4 Indices Combined</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARTS GRID -->
+  <div class="charts-grid ${isFullWidthLayout?'full-width':''}">
+    <div class="panel">
+      <div class="ptitle">Volume Ratio Trend (Heavy Participation > 2.0 · Neutral = 1.0 · Dull < 0.5)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-volratio"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">% Stocks Above 10 / 20 / 50 / 200 EMA (80 = Overbought · 50 = Midline · 20 = Oversold)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-ema"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Signal-MBI Trend (Bullish ≥ +3 · Bearish ≤ -3)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-mbi"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Stocks Up 4%+ vs Down 4%+ (Daily %)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-4pct"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">New 52-Week Highs vs Lows (%)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-hilo"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Nifty 50 vs Nifty 500 vs CNX Smallcap vs MidSmall 400 — Daily % Change</div>
+      <div class="chart-wrap-lg"><canvas id="mb-index"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">Net Breadth Trend (Up4% − Down4%)</div>
+      <div class="chart-wrap-lg"><canvas id="mb-netbreadth"></canvas></div>
+    </div>
+    <div class="panel">
+      <div class="ptitle">% Within 15% of 52-Week High</div>
+      <div class="chart-wrap-lg"><canvas id="mb-within15"></canvas></div>
+    </div>
+    <div class="panel" style="grid-column: 1 / -1;">
+      <div class="ptitle">5-Day Momentum — Stocks +15% / -15% Movers</div>
+      <div class="chart-wrap-lg"><canvas id="mb-momentum"></canvas></div>
+    </div>
+  </div>`;
+
+  applyDateFilter();
+  buildCharts();
+}
+
+function setDateRange(n){
+  const lastDate = mbAllRows[mbAllRows.length-1].date;
+  const firstDate = mbAllRows[0].date;
+  document.getElementById('mb-to').value = lastDate;
+  if(n === 'all'){
+    document.getElementById('mb-from').value = firstDate;
+  } else {
+    const idx = Math.max(0, mbAllRows.length - n);
+    document.getElementById('mb-from').value = mbAllRows[idx].date;
+  }
+  applyDateFilter();
+}
+
+function applyDateFilter(){
+  const from = document.getElementById('mb-from').value;
+  const to = document.getElementById('mb-to').value;
+  let filtered = mbAllRows.filter(r => r.date >= from && r.date <= to);
+  const sortKey = COLS[tableSortIdx].key;
+  filtered.sort((a,b)=>{
+    let av=a[sortKey], bv=b[sortKey];
+    if(av===null||av===undefined) return 1;
+    if(bv===null||bv===undefined) return -1;
+    const cmp = (typeof av==='string') ? av.localeCompare(bv) : av-bv;
+    return tableSortDir==='asc' ? cmp : -cmp;
+  });
+  document.getElementById('mb-range-count').textContent = `${filtered.length} trading day(s) shown`;
+  document.getElementById('mb-table-body').innerHTML = filtered.map(r=>
+    `<tr>${visibleCols().map(c=>renderCell(c, r[c.key])).join('')}</tr>`
+  ).join('') || `<tr><td colspan="${visibleCols().length}"><div class="empty">No data available in date range</div></td></tr>`;
+}
+
+function exportTableCSV(){
+  const from = document.getElementById('mb-from').value;
+  const to = document.getElementById('mb-to').value;
+  const cols = visibleCols();
+  const filtered = mbAllRows.filter(r => r.date >= from && r.date <= to);
+  const rows = [cols.map(c=>c.label)];
+  filtered.forEach(r=>rows.push(cols.map(c=>r[c.key] ?? '')));
+  const csv = rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `market-breadth_${from}_to_${to}.csv`;
+  a.click();
+}
+
+function setTableSort(idx){
+  if(tableSortIdx === idx){ tableSortDir = tableSortDir==='asc' ? 'desc' : 'asc'; }
+  else { tableSortIdx = idx; tableSortDir = 'desc'; }
+  renderTableHeaderAndBody();
+}
+
+function renderTableHeaderAndBody(){
+  const thead = document.querySelector('.mb-table thead tr');
+  thead.innerHTML = visibleCols().map(c=>{const i=COLS.indexOf(c);return `<th title="${c.desc||''}" onclick="setTableSort(${i})">${c.label}${tableSortIdx===i?(tableSortDir==='asc'?' ↑':' ↓'):''}</th>`;}).join('');
+  applyDateFilter();
+}
+
+function setChartRange(n, btn){
+  chartRangeDays = n;
+  if(btn){
+    btn.parentElement.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  buildCharts();
+}
+
+// BUILD CHARTS WITH DD-MM-YY FORMAT & CONDITIONAL HOVER LINE
+function buildCharts(){
+  const rows = chartRangeDays==='all' ? mbAllRows : mbAllRows.slice(-chartRangeDays);
+  mbCharts.forEach(c=>c.destroy()); mbCharts=[];
+  const labels = rows.map(r=>r.date);
+  const gridColor = '#1e2d3d', tickColor = '#5a7a94';
+
+  function getOverlayDatasets(){
+    const ds = [];
+    if(selectedIndexOverlay === 'nifty' || selectedIndexOverlay === 'all'){
+      ds.push({label:'Nifty 50 %',data:rows.map(r=>r.niftyChg!==null?+(r.niftyChg*100).toFixed(2):null),borderColor:'#00d4ff',borderDash:[3,3],pointRadius:0,borderWidth:1.5,yAxisID:'y1'});
+    }
+    if(selectedIndexOverlay === 'nifty500' || selectedIndexOverlay === 'all'){
+      ds.push({label:'Nifty 500 %',data:rows.map(r=>r.smallcapChg!==null?+(r.smallcapChg*100).toFixed(2):null),borderColor:'#ffab00',borderDash:[3,3],pointRadius:0,borderWidth:1.5,yAxisID:'y1'});
+    }
+    if(selectedIndexOverlay === 'smallcap' || selectedIndexOverlay === 'all'){
+      ds.push({label:'CNX Smallcap %',data:rows.map(r=>r.cnxSmallcapChg!==null?+(r.cnxSmallcapChg*100).toFixed(2):null),borderColor:'#00e676',borderDash:[3,3],pointRadius:0,borderWidth:1.5,yAxisID:'y1'});
+    }
+    if(selectedIndexOverlay === 'midsmall400' || selectedIndexOverlay === 'all'){
+      ds.push({label:'MidSmall 400 %',data:rows.map(r=>r.midsmall400Chg!==null?+(r.midsmall400Chg*100).toFixed(2):null),borderColor:'#a78bfa',borderDash:[3,3],pointRadius:0,borderWidth:1.5,yAxisID:'y1'});
+    }
+    return ds;
+  }
+
+  const hasOverlay = selectedIndexOverlay !== 'none';
+
+  const baseOpts = (extra)=>Object.assign({
+    responsive:true, maintainAspectRatio:false,
+    interaction: { mode: 'index', intersect: false },
+    plugins:{legend:{labels:{color:tickColor,font:{size:9},boxWidth:8}}},
+    scales:{
+      x:{
+        display: showXAxisDates,
+        ticks: { 
+          color: tickColor, 
+          font: { size: 9 }, 
+          maxTicksLimit: 12, 
+          maxRotation: 0,
+          callback: function(val) {
+            return formatDateDDMMYY(this.getLabelForValue(val));
+          }
+        },
+        grid: { color: gridColor }
+      },
+      y:{ticks:{color:tickColor,font:{size:9}},grid:{color:gridColor}},
+      y1: hasOverlay ? {
+        position: 'right',
+        ticks: { color: '#a78bfa', font: { size: 9 }, callback: v => v + '%' },
+        grid: { drawOnChartArea: false }
+      } : { display: false }
+    }
+  }, extra||{});
+
+  const refLine = (val,color)=>({label:val+' line',data:rows.map(()=>val),borderColor:color,borderDash:[4,4],pointRadius:0,borderWidth:1.5,fill:false});
+
+  // 1. Volume Ratio Chart
+  const ds1 = [
+    {label:'Volume Ratio',data:rows.map(r=>r.volumeRatio),borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.12)',fill:true,pointRadius:0,borderWidth:2,tension:0.3},
+    refLine(2.0,'#00e676'), refLine(0.5,'#ff3d5a'), ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-volratio'),{type:'line',data:{labels,datasets:ds1},options:baseOpts()}));
+
+  // 2. EMA Participation Chart
+  const ds2 = [
+    {label:'10 EMA',data:rows.map(r=>r.abv10),borderColor:'#00d4ff',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'20 EMA',data:rows.map(r=>r.abv20),borderColor:'#00e676',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'50 EMA',data:rows.map(r=>r.abv50),borderColor:'#ffab00',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'200 EMA',data:rows.map(r=>r.abv200),borderColor:'#ff3d5a',pointRadius:0,borderWidth:2,tension:0.3},
+    refLine(80,'#00e67680'), refLine(50,'#5a7a94'), refLine(20,'#ff3d5a80'), ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-ema'),{type:'line',data:{labels,datasets:ds2},options:baseOpts({scales:{x:{display:showXAxisDates,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{min:0,max:100,ticks:{color:tickColor,font:{size:9},callback:v=>v+'%'},grid:{color:gridColor}},y1:hasOverlay?{position:'right',ticks:{color:'#a78bfa',font:{size:9},callback:v=>v+'%'},grid:{drawOnChartArea:false}}:{display:false}}})}));
+
+  // 3. Signal-MBI Chart
+  const ds3 = [
+    {label:'Signal-MBI',data:rows.map(r=>r.signalMbi),borderColor:'#a78bfa',backgroundColor:'#a78bfa20',fill:true,pointRadius:0,borderWidth:2,tension:0.3},
+    ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-mbi'),{type:'line',data:{labels,datasets:ds3},options:baseOpts({scales:{x:{display:showXAxisDates,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{min:-6,max:6,ticks:{color:tickColor,font:{size:9}},grid:{color:gridColor}},y1:hasOverlay?{position:'right',ticks:{color:'#a78bfa',font:{size:9},callback:v=>v+'%'},grid:{drawOnChartArea:false}}:{display:false}}})}));
+
+  // 4. Stocks Up 4%+ vs Down 4%+
+  const ds4 = [
+    {label:'Up 4%+',data:rows.map(r=>r.up4),borderColor:'#00e676',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'Down 4%+',data:rows.map(r=>r.dn4),borderColor:'#ff3d5a',pointRadius:0,borderWidth:2,tension:0.3},
+    refLine(10,'#ffab00'), ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-4pct'),{type:'line',data:{labels,datasets:ds4},options:baseOpts()}));
+
+  // 5. New Highs vs Lows
+  const ds5 = [
+    {label:'New Highs',data:rows.map(r=>r.newHigh),backgroundColor:'rgba(0,230,118,0.6)',borderRadius:2},
+    {label:'New Lows',data:rows.map(r=>-Math.abs(r.newLow||0)),backgroundColor:'rgba(255,61,90,0.6)',borderRadius:2},
+    ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-hilo'),{type:'bar',data:{labels,datasets:ds5},options:baseOpts({scales:{x:{display:showXAxisDates,stacked:true,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{stacked:true,ticks:{color:tickColor,font:{size:9}},grid:{color:gridColor}},y1:hasOverlay?{position:'right',ticks:{color:'#a78bfa',font:{size:9},callback:v=>v+'%'},grid:{drawOnChartArea:false}}:{display:false}}})}));
+
+  // 6. Indices Daily % Change
+  mbCharts.push(new Chart(document.getElementById('mb-index'),{type:'line',data:{labels,datasets:[
+    {label:'Nifty 50 %',data:rows.map(r=>r.niftyChg!==null?+(r.niftyChg*100).toFixed(2):null),borderColor:'#00d4ff',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'Nifty 500 %',data:rows.map(r=>r.smallcapChg!==null?+(r.smallcapChg*100).toFixed(2):null),borderColor:'#ffab00',pointRadius:0,borderWidth:2,tension:0.3},
+    {label:'CNX Smallcap %',data:rows.map(r=>r.cnxSmallcapChg!==null?+(r.cnxSmallcapChg*100).toFixed(2):null),borderColor:'#00e676',pointRadius:0,borderWidth:1.5,tension:0.3},
+    {label:'MidSmall 400 %',data:rows.map(r=>r.midsmall400Chg!==null?+(r.midsmall400Chg*100).toFixed(2):null),borderColor:'#a78bfa',pointRadius:0,borderWidth:1.5,tension:0.3}
+  ]},options:baseOpts({scales:{x:{display:showXAxisDates,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{ticks:{color:tickColor,font:{size:9},callback:v=>v+'%'},grid:{color:gridColor}}}})}));
+
+  // 7. Net Breadth Chart
+  const ds7 = [
+    {label:'Net Breadth',data:rows.map(r=>r.netBreadth),backgroundColor:rows.map(r=>(r.netBreadth||0)>=0?'rgba(0,230,118,0.6)':'rgba(255,61,90,0.6)'),borderRadius:2},
+    ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-netbreadth'),{type:'bar',data:{labels,datasets:ds7},options:baseOpts()}));
+
+  // 8. % Within 15% of 52WH
+  const ds8 = [
+    {label:'% within 15% of 52WH',data:rows.map(r=>r.within15),borderColor:'#00e676',backgroundColor:'#00e67620',fill:true,pointRadius:0,borderWidth:2,tension:0.3},
+    ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-within15'),{type:'line',data:{labels,datasets:ds8},options:baseOpts({scales:{x:{display:showXAxisDates,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{min:0,max:100,ticks:{color:tickColor,font:{size:9},callback:v=>v+'%'},grid:{color:gridColor}},y1:hasOverlay?{position:'right',ticks:{color:'#a78bfa',font:{size:9},callback:v=>v+'%'},grid:{drawOnChartArea:false}}:{display:false}}})}));
+
+  // 9. 5-Day Momentum Chart
+  const ds9 = [
+    {label:'+15% in 5D',data:rows.map(r=>r.plus15),backgroundColor:'rgba(0,230,118,0.6)',borderRadius:2},
+    {label:'-15% in 5D',data:rows.map(r=>-Math.abs(r.minus15||0)),backgroundColor:'rgba(255,61,90,0.6)',borderRadius:2},
+    ...getOverlayDatasets()
+  ];
+  mbCharts.push(new Chart(document.getElementById('mb-momentum'),{type:'bar',data:{labels,datasets:ds9},options:baseOpts({scales:{x:{display:showXAxisDates,stacked:true,ticks:{color:tickColor,font:{size:9},maxTicksLimit:12,callback:function(val){return formatDateDDMMYY(this.getLabelForValue(val));}},grid:{color:gridColor}},y:{stacked:true,ticks:{color:tickColor,font:{size:9}},grid:{color:gridColor}},y1:hasOverlay?{position:'right',ticks:{color:'#a78bfa',font:{size:9},callback:v=>v+'%'},grid:{drawOnChartArea:false}}:{display:false}}})}));
+}
+
+loadMB();
+</script>
+</body>
+</html>
